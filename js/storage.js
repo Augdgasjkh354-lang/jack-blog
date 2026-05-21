@@ -164,7 +164,7 @@ const StorageManager = {
     if (localVersion === versionInfo.wordsVersion) {
       const localWords = this.getLocalWords();
       if (localWords && localWords.length > 0) {
-        return localWords;
+        return this._mergeUserWords(localWords);
       }
     }
 
@@ -184,7 +184,40 @@ const StorageManager = {
     this.saveWords(finalWords);
     this.saveVersion(versionInfo.wordsVersion);
 
-    return finalWords;
+    return this._mergeUserWords(finalWords);
+  },
+
+  /**
+   * 合并刀稿编辑器产生的用户词条（cidao_user_words）
+   * 将编辑器中「转为词条」的数据合并到主词条列表中
+   */
+  _mergeUserWords(words) {
+    try {
+      const raw = localStorage.getItem('cidao_user_words');
+      if (!raw) return words;
+      const userWords = JSON.parse(raw);
+      if (!Array.isArray(userWords) || userWords.length === 0) return words;
+
+      const existingIds = new Set(words.map(w => w.id));
+      const newWords = [];
+
+      for (const uw of userWords) {
+        if (!existingIds.has(uw.id)) {
+          newWords.push(this._fillMissingFields(uw));
+          existingIds.add(uw.id);
+        }
+      }
+
+      if (newWords.length > 0) {
+        const merged = [...words, ...newWords];
+        this.saveWords(merged);
+        return merged;
+      }
+      return words;
+    } catch (e) {
+      console.error('[StorageManager] 合并用户词条失败:', e);
+      return words;
+    }
   },
 
   /**
