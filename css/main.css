@@ -1,0 +1,178 @@
+/* 词刀 Cidao - 主样式 */
+/* 保持书卷气：衬线字体、暖纸色背景、克制红色点缀 */
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:ui-serif,"Noto Serif CJK SC","Noto Serif SC","Songti SC",serif}
+button,input,textarea,select{font:inherit}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--rule);border-radius:2px}
+
+/* 主题变量 */
+[data-t="light"]{
+  --ink:#1a1612;--ink-l:#4a3f35;--ink-f:#8a7a6a;
+  --paper:#f5f0e8;--paper-w:#ede7d9;--paper-d:#e0d8c8;
+  --rule:#c8bfb0;--red:#8b2500;--red-bg:rgba(139,37,0,.07);
+  background:var(--paper);color:var(--ink);color-scheme:light
+}
+[data-t="dark"]{
+  --ink:#e0d8c8;--ink-l:#b0a898;--ink-f:#7a7060;
+  --paper:#1c1a16;--paper-w:#242218;--paper-d:#2e2a24;
+  --rule:#3a3428;--red:#d05030;--red-bg:rgba(208,80,48,.12);
+  background:var(--paper);color:var(--ink);color-scheme:dark
+}
+
+/* 布局 */
+.app{
+  display:flex;flex-direction:column;height:100vh;
+  background:var(--paper);color:var(--ink);overflow:hidden
+}
+.hd{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 20px;border-bottom:1px solid var(--rule);
+  background:var(--paper-w);flex-shrink:0
+}
+.hd-title{font-size:18px;font-weight:600;letter-spacing:.04em}
+.hd-acts{display:flex;gap:8px}
+.app-body{flex:1;overflow-y:auto;padding:0}
+.content-area{padding:20px;animation:fadeIn .3s ease}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* 按钮 */
+.bn{
+  border:1px solid var(--rule);background:var(--paper-w);color:var(--ink);
+  padding:6px 14px;cursor:pointer;font-size:13px;
+  transition:all .2s
+}
+.bn:hover{background:var(--paper-d)}
+.bn:active{transform:scale(.97)}
+.bn.p{background:var(--red);color:#f5f0e8;border-color:var(--red)}
+.bn.p:hover{opacity:.9}
+
+/* 搜索栏 */
+.search-bar{
+  display:flex;gap:8px;margin-bottom:16px;
+  padding:12px 20px;background:var(--paper-w);
+  border-bottom:1px solid var(--rule)
+}
+.search-bar input{
+  flex:1;padding:8px 12px;border:1px solid var(--rule);
+  background:var(--paper);color:var(--ink);font-size:14px;
+  outline:none
+}
+.search-bar input:focus{border-color:var(--red)}
+.search-hint{
+  font-size:11px;color:var(--ink-f);padding:0 20px;margin-top:-8px;margin-bottom:12px
+}
+
+/* 卡片 */
+.card{
+  padding:14px 20px;border-bottom:1px solid var(--rule);
+  cursor:pointer;transition:background .2s
+}
+.card:hover{background:var(--paper-w)}
+.card-title{font-size:15px;font-weight:500;margin-bottom:4px}
+.card-meta{font-size:12px;color:var(--ink-f);line-height:1.5}
+
+/* 词条详情 */
+.word-detail{padding:20px}
+.word-detail h2{font-size:22px;margin-bottom:16px;color:var(--ink)}
+.word-field{margin-bottom:14px}
+.word-field-label{
+  font-size:11px;color:var(--red);letter-spacing:.06em;
+  text-transform:uppercase;margin-bottom:4px;font-weight:600
+}
+.word-field-content{
+  font-size:14px;line-height:1.7;color:var(--ink-l);
+  padding:8px 12px;background:var(--red-bg);border-left:2px solid var(--red)
+}
+
+/* 首页 */
+.home-hero{
+  text-align:center;padding:40px 20px 24px
+}
+.home-hero h1{font-size:28px;letter-spacing:.08em;margin-bottom:6px}
+.home-hero .subtitle{font-size:13px;color:var(--ink-f);margin-bottom:24px}
+.home-actions{
+  display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
+  margin-bottom:32px
+}
+.home-actions .bn{padding:10px 20px;font-size:14px}
+
+/* 今日一词 / 随机一词 展示 */
+.featured-word{
+  max-width:480px;margin:0 auto;padding:20px;
+  border:1px solid var(--rule);background:var(--paper-w)
+}
+.featured-word h3{
+  font-size:18px;text-align:center;margin-bottom:12px
+}
+.featured-word .tag{
+  display:inline-block;font-size:11px;color:var(--red);
+  border:1px solid var(--red);padding:2px 8px;margin-bottom:12px
+}
+
+/* 模态框 */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.4);
+  display:none;align-items:center;justify-content:center;z-index:1000
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:var(--paper);border:1px solid var(--rule);
+  padding:24px;max-width:500px;width:90%;max-height:80vh;
+  overflow-y:auto
+}
+.modal h3{margin-bottom:16px;font-size:16px}
+.modal-f{margin-bottom:12px}
+.modal-f label{display:block;font-size:12px;color:var(--ink-f);margin-bottom:4px}
+.modal-f input,.modal-f textarea{
+  width:100%;padding:8px 10px;border:1px solid var(--rule);
+  background:var(--paper-w);color:var(--ink);outline:none
+}
+.modal-f textarea{min-height:80px;resize:vertical}
+.modal-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+
+/* 密码锁 */
+.lock-screen{
+  position:fixed;inset:0;z-index:9999;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--paper)
+}
+.lock-box{text-align:center;max-width:320px;padding:24px}
+.lock-box h1{font-size:24px;letter-spacing:.06em;margin-bottom:8px}
+.lock-box .divider{width:28px;height:2px;background:var(--red);margin:0 auto 24px}
+.lock-box input{
+  width:100%;font-size:15px;padding:10px 14px;
+  background:var(--paper-w);border:1px solid var(--rule);
+  border-bottom:2px solid var(--rule);color:var(--ink);
+  outline:none;text-align:center;letter-spacing:.1em
+}
+.lock-box .err{font-size:12px;color:var(--red);margin-top:8px;min-height:18px}
+.lock-box button{
+  margin-top:12px;font-size:13px;padding:8px 28px;
+  background:var(--red);color:#f5f0e8;border:1px solid var(--red);
+  cursor:pointer;letter-spacing:.06em
+}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  background:var(--ink);color:var(--paper);padding:8px 20px;
+  font-size:13px;display:none;z-index:2000;
+  border-radius:2px
+}
+
+/* 统计 */
+.stats{
+  display:flex;gap:16px;justify-content:center;
+  padding:12px 20px;font-size:12px;color:var(--ink-f)
+}
+
+/* 响应式 */
+@media(max-width:480px){
+  .home-hero{padding:28px 16px 16px}
+  .home-hero h1{font-size:22px}
+  .content-area{padding:16px}
+  .search-bar{padding:10px 16px}
+}
