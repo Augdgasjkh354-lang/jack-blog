@@ -138,8 +138,6 @@ class CidaoApp {
     const diaries = StorageManager.getDiariesByMonth(this.diaryMonth);
     const [year, month] = this.diaryMonth.split('-');
     const monthLabel = `${year}年${parseInt(month)}月`;
-    const today = this._getTodayDate();
-    const hasTodayDiary = diaries.some(d => d.date === today);
 
     mainView.innerHTML = `
       <div class="diary-view">
@@ -149,16 +147,14 @@ class CidaoApp {
           <button class="bn" onclick="app._diaryNextMonth()">→</button>
         </div>
         <div class="diary-today-action">
-          <button class="bn p" onclick="app._editDiary('${today}')">
-            ${hasTodayDiary ? '继续写今天的日记' : '写今天的日记'}
-          </button>
+          <button class="bn p" onclick="app._newDiary()">写新日记</button>
         </div>
         <div class="diary-list">
           ${diaries.length > 0 ? diaries.map(d => this._renderDiaryCard(d)).join('') : `
             <div class="empty-result">
               <div class="empty-result-icon">📓</div>
               <div class="empty-result-text">这个月还没有记录</div>
-              <div class="empty-result-hint">写下今天的第一篇吧</div>
+              <div class="empty-result-hint">写下第一篇吧</div>
             </div>
           `}
         </div>
@@ -172,12 +168,12 @@ class CidaoApp {
     const day = date.getDate();
     const weekday = weekdays[date.getDay()];
     const monthDay = `${parseInt(diary.date.split('-')[1])}月${day}日`;
-    const moods = { calm: '😌 平静', inspired: '✨ 受启发', confused: '🤔 困惑', tired: '😮\u200d💨 笫惫', grateful: '🙏 感恩' };
+    const moods = { calm: '😌 平静', inspired: '✨ 受启发', confused: '🤔 困惑', tired: '😮‍💨 笫惫', grateful: '🙏 感恩' };
     const moodText = diary.mood && moods[diary.mood] ? moods[diary.mood] : '';
     const preview = diary.content ? this._truncate(diary.content, 80) : '空白日记';
 
     return `
-      <div class="diary-card" onclick="app._editDiary('${diary.date}')">
+      <div class="diary-card" onclick="app._editDiaryById('${diary.id}')">
         <div class="diary-card-head">
           <span class="diary-card-date">${monthDay} · ${weekday}</span>
           ${moodText ? `<span class="diary-card-mood">${moodText}</span>` : ''}
@@ -201,16 +197,118 @@ class CidaoApp {
     this.renderDiary();
   }
 
-  _editDiary(date) {
-    this._currentDiaryDate = date;
+  _newDiary() {
+    const today = this._getTodayDate();
+    const diary = StorageManager.createDiary(today);
+    if (diary) {
+      this._currentDiaryId = diary.id;
+      this.currentView = 'diaryEdit';
+      this.renderDiaryEdit();
+    }
+  }
+
+  _editDiaryById(id) {
+    this._currentDiaryId = id;
     this.currentView = 'diaryEdit';
     this.renderDiaryEdit();
   }
 
+  // ===== 日记编辑 =====
   renderDiaryEdit() {
-    // 第四步实现
     const mainView = document.getElementById('mainView');
-    mainView.innerHTML = '<div class="loading">加载中…</div>';
+    const diary = StorageManager.getDiaryById(this._currentDiaryId);
+    if (!diary) {
+      this.switchView('diary');
+      return;
+    }
+
+    const date = new Date(diary.date + 'T00:00:00');
+    const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+    const dateLabel = `${parseInt(diary.date.split('-')[1])}月${date.getDate()}日 ${weekdays[date.getDay()]}`;
+
+    const moods = [
+      { key: 'calm', emoji: '😌', label: '平静' },
+      { key: 'inspired', emoji: '✨', label: '受启发' },
+      { key: 'confused', emoji: '🤔', label: '困惑' },
+      { key: 'tired', emoji: '😮‍💨', label: '笫惫' },
+      { key: 'grateful', emoji: '🙏', label: '感恩' }
+    ];
+
+    mainView.innerHTML = `
+      <div class="diary-edit">
+        <div class="diary-edit-header">
+          <button class="bn" onclick="app.switchView('diary')">← 返回</button>
+          <span class="diary-edit-date">${dateLabel}</span>
+        </div>
+        <div class="diary-mood-picker">
+          ${moods.map(m => `
+            <button class="mood-btn${diary.mood === m.key ? ' active' : ''}" data-mood="${m.key}" type="button" onclick="app._setDiaryMood('${m.key}')">
+              <span class="mood-emoji">${m.emoji}</span>
+              <span class="mood-label">${m.label}</span>
+            </button>
+          `).join('')}
+        </div>
+        <textarea class="diary-textarea" id="diaryContent" placeholder="写下今天的感悟…">${this._escapeHtml(diary.content || '')}</textarea>
+        <div class="diary-edit-meta">
+          <span id="diaryCharCount">${(diary.content || '').length} 字</span>
+          <span id="diarySaveState">已保存</span>
+        </div>
+        <div class="diary-edit-actions">
+          <button class="bn p" onclick="app._saveDiary()">保存</button>
+          <button class="bn" onclick="app._exportDiaryImage()">保存为图片</button>
+          <button class="bn" style="color:var(--red);border-color:var(--red)" onclick="app._deleteDiary()">删除</button>
+        </div>
+      </div>
+    `;
+
+    // 绑定自动保存
+    const textarea = document.getElementById('diaryContent');
+    let saveTimer = null;
+    textarea.addEventListener('input', () => {
+      document.getElementById('diaryCharCount').textContent = textarea.value.length + ' 字';
+      document.getElementById('diarySaveState').textContent = '未保存';
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => {
+        this._saveDiaryQuiet();
+      }, 2000);
+    });
+  }
+
+  _setDiaryMood(mood) {
+    const diary = StorageManager.getDiaryById(this._currentDiaryId);
+    if (!diary) return;
+    diary.mood = diary.mood === mood ? '' : mood;
+    StorageManager.saveDiary(diary);
+    this.renderDiaryEdit();
+  }
+
+  _saveDiaryQuiet() {
+    const diary = StorageManager.getDiaryById(this._currentDiaryId);
+    if (!diary) return;
+    const textarea = document.getElementById('diaryContent');
+    if (!textarea) return;
+    diary.content = textarea.value;
+    StorageManager.saveDiary(diary);
+    const stateEl = document.getElementById('diarySaveState');
+    if (stateEl) stateEl.textContent = '已保存';
+  }
+
+  _saveDiary() {
+    this._saveDiaryQuiet();
+    this.toast('已保存');
+  }
+
+  _deleteDiary() {
+    if (!confirm('确定删除这篇日记吗？')) return;
+    StorageManager.deleteDiary(this._currentDiaryId);
+    this._currentDiaryId = null;
+    this.toast('已删除');
+    this.switchView('diary');
+  }
+
+  _exportDiaryImage() {
+    // 第五步实现
+    this.toast('即将支持');
   }
 
   // ===== 首页 =====

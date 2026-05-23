@@ -259,6 +259,43 @@ button,input,textarea,select{font:inherit}
   display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden
 }
 
+/* 日记编辑 */
+.diary-edit{padding:20px}
+.diary-edit-header{
+  display:flex;align-items:center;gap:12px;margin-bottom:16px
+}
+.diary-edit-date{font-size:15px;font-weight:600}
+.diary-mood-picker{
+  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px
+}
+.mood-btn{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:8px 12px;border:1px solid var(--rule);background:var(--paper-w);
+  border-radius:8px;cursor:pointer;
+  transition:all var(--transition)
+}
+.mood-btn:hover{border-color:var(--ink-f)}
+.mood-btn.active{border-color:var(--red);background:var(--red-bg)}
+.mood-emoji{font-size:20px;line-height:1}
+.mood-label{font-size:10px;color:var(--ink-f)}
+.mood-btn.active .mood-label{color:var(--red)}
+.diary-textarea{
+  width:100%;min-height:240px;resize:vertical;
+  padding:16px;border:1px solid var(--rule);border-radius:var(--radius);
+  background:var(--paper-w);color:var(--ink);
+  font-size:15px;line-height:1.9;outline:none;
+  font-family:inherit
+}
+.diary-textarea:focus{border-color:var(--red)}
+.diary-edit-meta{
+  display:flex;gap:16px;padding:8px 0;
+  font-size:12px;color:var(--ink-f)
+}
+.diary-edit-actions{
+  display:flex;gap:8px;flex-wrap:wrap;padding-top:12px;
+  border-top:1px solid var(--rule)
+}
+
 /* 统计 */
 .stats{
   display:flex;gap:16px;justify-content:center;

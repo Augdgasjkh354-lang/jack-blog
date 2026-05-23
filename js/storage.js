@@ -242,14 +242,14 @@ const StorageManager = {
   // ===== 日记 CRUD =====
 
   /**
-   * 获取所有日记，按日期倒序
+   * 获取所有日记，按创建时间倒序
    */
   getDiaries() {
     try {
       const raw = localStorage.getItem(this.KEYS.diary);
       if (!raw) return [];
       const diaries = JSON.parse(raw);
-      return diaries.sort((a, b) => b.date.localeCompare(a.date));
+      return diaries.sort((a, b) => (b.createdAt || b.date).localeCompare(a.createdAt || a.date));
     } catch (e) {
       console.error('[StorageManager] 读取日记失败:', e);
       return [];
@@ -257,11 +257,11 @@ const StorageManager = {
   },
 
   /**
-   * 根据日期获取单篇日记
+   * 根据 id 获取单篇日记
    */
-  getDiaryByDate(date) {
+  getDiaryById(id) {
     const diaries = this.getDiaries();
-    return diaries.find(d => d.date === date) || null;
+    return diaries.find(d => d.id === id) || null;
   },
 
   /**
@@ -274,22 +274,42 @@ const StorageManager = {
   },
 
   /**
-   * 保存日记（新建或更新）
-   * 每天只能有一篇，同一天重复保存是更新
+   * 新建日记，返回新日记对象
+   */
+  createDiary(date) {
+    try {
+      const diaries = this.getDiaries();
+      const newDiary = {
+        id: 'diary_' + Date.now(),
+        date: date,
+        content: '',
+        mood: '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      diaries.push(newDiary);
+      localStorage.setItem(this.KEYS.diary, JSON.stringify(diaries));
+      return newDiary;
+    } catch (e) {
+      console.error('[StorageManager] 新建日记失败:', e);
+      return null;
+    }
+  },
+
+  /**
+   * 更新日记（按 id）
    */
   saveDiary(diary) {
     try {
       const diaries = this.getDiaries();
-      const idx = diaries.findIndex(d => d.date === diary.date);
+      const idx = diaries.findIndex(d => d.id === diary.id);
       if (idx >= 0) {
         diaries[idx] = { ...diaries[idx], ...diary, updatedAt: new Date().toISOString() };
       } else {
         diaries.push({
-          id: 'diary_' + Date.now(),
-          date: diary.date,
-          content: diary.content || '',
-          mood: diary.mood || '',
-          createdAt: new Date().toISOString(),
+          ...diary,
+          id: diary.id || 'diary_' + Date.now(),
+          createdAt: diary.createdAt || new Date().toISOString(),
           updatedAt: new Date().toISOString()
         });
       }
@@ -302,12 +322,12 @@ const StorageManager = {
   },
 
   /**
-   * 删除日记
+   * 删除日记（按 id）
    */
-  deleteDiary(date) {
+  deleteDiary(id) {
     try {
       let diaries = this.getDiaries();
-      diaries = diaries.filter(d => d.date !== date);
+      diaries = diaries.filter(d => d.id !== id);
       localStorage.setItem(this.KEYS.diary, JSON.stringify(diaries));
       return true;
     } catch (e) {
