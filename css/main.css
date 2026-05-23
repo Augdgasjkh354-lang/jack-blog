@@ -173,12 +173,38 @@ button,input,textarea,select{font:inherit}
 }
 .lock-box button:hover{opacity:.9;}
 
+/* Loading */
+.loading{
+  text-align:center;padding:48px 20px;
+  color:var(--ink-f);font-size:14px;
+  animation:pulse 1.5s ease-in-out infinite
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* 搜索空状态 */
+.empty-result{
+  text-align:center;padding:48px 20px;color:var(--ink-f)
+}
+.empty-result-icon{
+  font-size:36px;margin-bottom:12px;opacity:.5
+}
+.empty-result-text{
+  font-size:15px;margin-bottom:8px;color:var(--ink-l)
+}
+.empty-result-hint{
+  font-size:12px;line-height:1.6
+}
+
 /* Toast */
 .toast{
-  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);
   background:var(--ink);color:var(--paper);padding:8px 20px;
   font-size:13px;display:none;z-index:2000;
-  border-radius:var(--radius)
+  border-radius:var(--radius);
+  opacity:0;transition:opacity .2s ease, transform .2s ease
+}
+.toast.show{
+  opacity:1;transform:translateX(-50%) translateY(0)
 }
 
 /* 统计 */

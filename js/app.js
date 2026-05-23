@@ -23,6 +23,7 @@ class CidaoApp {
     this._setupLock();
 
     // 加载数据
+    document.getElementById('mainView').innerHTML = '<div class="loading">正在加载词典数据…</div>';
     this.words = await StorageManager.initialize();
     this.filteredWords = this.words;
 
@@ -145,11 +146,17 @@ class CidaoApp {
       <div id="wordList">
         ${visibleWords.map(w => this._renderWordCard(w)).join('')}
       </div>
-      ${hasMore ? `<div style="padding:16px 20px;text-align:center;">
+      ${visibleWords.length === 0 ? `<div class="empty-result">
+        <div class="empty-result-icon">∅</div>
+        <div class="empty-result-text">没有找到匹配的词条</div>
+        <div class="empty-result-hint">试试换个关键词，或用 word: / right: 等前缀限定搜索字段</div>
+      </div>` : ''}
+      ${visibleWords.length > 0 && hasMore ? `<div style="padding:16px 20px;text-align:center;">
         <button class="bn" onclick="app._loadMore()">加载更多（已显示 ${visibleWords.length} / ${this.filteredWords.length}）</button>
-      </div>` : `<div style="padding:16px 20px;text-align:center;font-size:12px;color:var(--ink-f);">
+      </div>` : ''}
+      ${visibleWords.length > 0 && !hasMore ? `<div style="padding:16px 20px;text-align:center;font-size:12px;color:var(--ink-f);">
         共 ${this.filteredWords.length} 条结果
-      </div>`}
+      </div>` : ''}
     `;
 
     // 聚焦搜索框
@@ -334,7 +341,11 @@ class CidaoApp {
     const el = document.getElementById('toast');
     el.textContent = msg;
     el.style.display = 'block';
-    setTimeout(() => { el.style.display = 'none'; }, duration);
+    el.classList.add('show');
+    setTimeout(() => {
+      el.classList.remove('show');
+      setTimeout(() => { el.style.display = 'none'; }, 200);
+    }, duration);
   }
 
   // ===== 工具方法 =====
