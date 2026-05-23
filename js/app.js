@@ -66,6 +66,28 @@ class CidaoApp {
     document.getElementById('modal').addEventListener('click', (e) => {
       if (e.target.id === 'modal') this.closeModal();
     });
+
+    // 底部 Tab 导航
+    const tabBar = document.getElementById('tabBar');
+    if (tabBar) {
+      tabBar.addEventListener('click', (e) => {
+        const item = e.target.closest('.tab-item');
+        if (!item) return;
+        const tab = item.dataset.tab;
+        if (tab === 'draft') {
+          window.location.href = './editor.html';
+          return;
+        }
+        tabBar.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+        item.classList.add('active');
+        this.currentTab = tab;
+        if (tab === 'dict') {
+          this.switchView('home');
+        } else if (tab === 'diary') {
+          this.switchView('diary');
+        }
+      });
+    }
   }
 
   // ===== 主题 =====
@@ -92,8 +114,21 @@ class CidaoApp {
       case 'browse': this.renderBrowse(); break;
       case 'random': this.renderRandom(); break;
       case 'today': this.renderToday(); break;
+      case 'diary': this.renderDiary(); break;
       default: this.renderHome();
     }
+  }
+
+  // ===== 日记（占位） =====
+  renderDiary() {
+    const mainView = document.getElementById('mainView');
+    mainView.innerHTML = `
+      <div class="empty-result">
+        <div class="empty-result-icon">📓</div>
+        <div class="empty-result-text">日记功能即将上线</div>
+        <div class="empty-result-hint">每天写一段感悟，记录你的思考</div>
+      </div>
+    `;
   }
 
   // ===== 首页 =====

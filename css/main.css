@@ -195,9 +195,30 @@ button,input,textarea,select{font:inherit}
   font-size:12px;line-height:1.6
 }
 
+/* 底部 Tab 导航 */
+.tab-bar{
+  display:flex;flex-shrink:0;
+  border-top:1px solid var(--rule);
+  background:var(--paper-w);
+  height:56px;
+}
+.tab-item{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:2px;
+  border:none;background:transparent;
+  color:var(--ink-f);cursor:pointer;
+  transition:color var(--transition);
+  font-size:10px;
+}
+.tab-item .tab-icon{font-size:20px;line-height:1}
+.tab-item .tab-label{font-size:10px;letter-spacing:.02em}
+.tab-item.active{color:var(--red)}
+.tab-item:hover{color:var(--ink-l)}
+.tab-item.active:hover{color:var(--red)}
+
 /* Toast */
 .toast{
-  position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);
+  position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(20px);
   background:var(--ink);color:var(--paper);padding:8px 20px;
   font-size:13px;display:none;z-index:2000;
   border-radius:var(--radius);

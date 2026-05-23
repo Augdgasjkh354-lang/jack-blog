@@ -29,13 +29,28 @@
   <div class="hd">
     <div class="hd-title">True</div>
     <div class="hd-acts">
-      <a class="bn" href="./editor.html" title="刀稿 - 草稿编辑器" style="text-decoration:none;">✏️</a>
       <button class="bn" id="themeBtn" title="切换主题">🌙</button>
     </div>
   </div>
   <div class="app-body">
     <div id="mainView" class="content-area"></div>
   </div>
+
+  <!-- 底部 Tab 导航 -->
+  <nav class="tab-bar" id="tabBar">
+    <button class="tab-item active" data-tab="dict" type="button">
+      <span class="tab-icon">📖</span>
+      <span class="tab-label">词典</span>
+    </button>
+    <button class="tab-item" data-tab="diary" type="button">
+      <span class="tab-icon">📝</span>
+      <span class="tab-label">日记</span>
+    </button>
+    <button class="tab-item" data-tab="draft" type="button">
+      <span class="tab-icon">✏️</span>
+      <span class="tab-label">草稿</span>
+    </button>
+  </nav>
 </div>
 
 <!-- 模态框 -->
