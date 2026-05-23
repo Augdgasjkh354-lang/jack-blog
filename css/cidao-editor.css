@@ -103,7 +103,7 @@ a{color:inherit;text-decoration:none}
 .draft-item{
   padding:13px 15px;
   border-bottom:1px solid var(--paper-d);
-  cursor:pointer;
+  cursor:pointer;transition: background .2s ease, border-left .2s ease, padding-left .2s ease;
 }
 .draft-item:hover{background:var(--paper)}
 .draft-item.active{background:var(--red-bg);border-left:3px solid var(--red);padding-left:12px}
