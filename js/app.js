@@ -12,6 +12,18 @@ class CidaoApp {
     this.searchQuery = '';
     this.PAGE_SIZE = 50;
     this.currentPage = 0;
+    // 日记状态
+    this.diaryMonth = this._getCurrentYearMonth();
+  }
+
+  _getCurrentYearMonth() {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  }
+
+  _getTodayDate() {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   }
 
   async init() {
@@ -115,20 +127,90 @@ class CidaoApp {
       case 'random': this.renderRandom(); break;
       case 'today': this.renderToday(); break;
       case 'diary': this.renderDiary(); break;
+      case 'diaryEdit': this.renderDiaryEdit(); break;
       default: this.renderHome();
     }
   }
 
-  // ===== 日记（占位） =====
+  // ===== 日记列表 =====
   renderDiary() {
     const mainView = document.getElementById('mainView');
+    const diaries = StorageManager.getDiariesByMonth(this.diaryMonth);
+    const [year, month] = this.diaryMonth.split('-');
+    const monthLabel = `${year}年${parseInt(month)}月`;
+    const today = this._getTodayDate();
+    const hasTodayDiary = diaries.some(d => d.date === today);
+
     mainView.innerHTML = `
-      <div class="empty-result">
-        <div class="empty-result-icon">📓</div>
-        <div class="empty-result-text">日记功能即将上线</div>
-        <div class="empty-result-hint">每天写一段感悟，记录你的思考</div>
+      <div class="diary-view">
+        <div class="diary-header">
+          <button class="bn" onclick="app._diaryPrevMonth()">←</button>
+          <span class="diary-month-label">${monthLabel}</span>
+          <button class="bn" onclick="app._diaryNextMonth()">→</button>
+        </div>
+        <div class="diary-today-action">
+          <button class="bn p" onclick="app._editDiary('${today}')">
+            ${hasTodayDiary ? '继续写今天的日记' : '写今天的日记'}
+          </button>
+        </div>
+        <div class="diary-list">
+          ${diaries.length > 0 ? diaries.map(d => this._renderDiaryCard(d)).join('') : `
+            <div class="empty-result">
+              <div class="empty-result-icon">📓</div>
+              <div class="empty-result-text">这个月还没有记录</div>
+              <div class="empty-result-hint">写下今天的第一篇吧</div>
+            </div>
+          `}
+        </div>
       </div>
     `;
+  }
+
+  _renderDiaryCard(diary) {
+    const date = new Date(diary.date + 'T00:00:00');
+    const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+    const day = date.getDate();
+    const weekday = weekdays[date.getDay()];
+    const monthDay = `${parseInt(diary.date.split('-')[1])}月${day}日`;
+    const moods = { calm: '😌 平静', inspired: '✨ 受启发', confused: '🤔 困惑', tired: '😮\u200d💨 笫惫', grateful: '🙏 感恩' };
+    const moodText = diary.mood && moods[diary.mood] ? moods[diary.mood] : '';
+    const preview = diary.content ? this._truncate(diary.content, 80) : '空白日记';
+
+    return `
+      <div class="diary-card" onclick="app._editDiary('${diary.date}')">
+        <div class="diary-card-head">
+          <span class="diary-card-date">${monthDay} · ${weekday}</span>
+          ${moodText ? `<span class="diary-card-mood">${moodText}</span>` : ''}
+        </div>
+        <div class="diary-card-content">${this._escapeHtml(preview)}</div>
+      </div>
+    `;
+  }
+
+  _diaryPrevMonth() {
+    const [y, m] = this.diaryMonth.split('-').map(Number);
+    const prev = m === 1 ? `${y - 1}-12` : `${y}-${String(m - 1).padStart(2, '0')}`;
+    this.diaryMonth = prev;
+    this.renderDiary();
+  }
+
+  _diaryNextMonth() {
+    const [y, m] = this.diaryMonth.split('-').map(Number);
+    const next = m === 12 ? `${y + 1}-01` : `${y}-${String(m + 1).padStart(2, '0')}`;
+    this.diaryMonth = next;
+    this.renderDiary();
+  }
+
+  _editDiary(date) {
+    this._currentDiaryDate = date;
+    this.currentView = 'diaryEdit';
+    this.renderDiaryEdit();
+  }
+
+  renderDiaryEdit() {
+    // 第四步实现
+    const mainView = document.getElementById('mainView');
+    mainView.innerHTML = '<div class="loading">加载中…</div>';
   }
 
   // ===== 首页 =====

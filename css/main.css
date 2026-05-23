@@ -228,6 +228,37 @@ button,input,textarea,select{font:inherit}
   opacity:1;transform:translateX(-50%) translateY(0)
 }
 
+/* 日记列表 */
+.diary-view{padding:0}
+.diary-header{
+  display:flex;align-items:center;justify-content:center;gap:16px;
+  padding:20px 20px 12px;
+}
+.diary-month-label{
+  font-size:16px;font-weight:600;letter-spacing:.04em;min-width:100px;text-align:center
+}
+.diary-today-action{
+  text-align:center;padding:0 20px 16px;
+}
+.diary-today-action .bn{padding:10px 24px;font-size:14px}
+.diary-list{padding:0 20px 20px}
+.diary-card{
+  padding:16px;margin-bottom:12px;
+  background:var(--paper-w);border:1px solid var(--rule);
+  border-radius:8px;cursor:pointer;
+  transition:box-shadow var(--transition), border-color var(--transition)
+}
+.diary-card:hover{box-shadow:var(--shadow);border-color:var(--red)}
+.diary-card-head{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:8px
+}
+.diary-card-date{font-size:13px;font-weight:600;color:var(--ink)}
+.diary-card-mood{font-size:12px;color:var(--ink-f)}
+.diary-card-content{
+  font-size:14px;line-height:1.7;color:var(--ink-l);
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden
+}
+
 /* 统计 */
 .stats{
   display:flex;gap:16px;justify-content:center;
