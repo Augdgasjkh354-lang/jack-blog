@@ -307,8 +307,38 @@ class CidaoApp {
   }
 
   _exportDiaryImage() {
-    // 第五步实现
-    this.toast('即将支持');
+    // 先保存当前内容
+    this._saveDiaryQuiet();
+    const diary = StorageManager.getDiaryById(this._currentDiaryId);
+    if (!diary) { this.toast('日记不存在'); return; }
+
+    const moods = { calm: '😌 平静', inspired: '✨ 受启发', confused: '🤔 困惑', tired: '😮‍💨 笫惫', grateful: '🙏 感恩' };
+    const moodText = diary.mood && moods[diary.mood] ? moods[diary.mood] : '';
+    const dateLabel = diary.date.replace(/-/g, '.');
+
+    // 将内容分段（最多4段）
+    const paragraphs = (diary.content || '').split(/\n+/).filter(p => p.trim());
+    const sections = [];
+    if (moodText) sections.push({ label: '心情', value: moodText });
+    if (paragraphs.length <= 3) {
+      paragraphs.forEach((p, i) => sections.push({ label: `第${i + 1}段`, value: p }));
+    } else {
+      sections.push({ label: '内容', value: paragraphs.join(' ') });
+    }
+    // 确保至少有一个 section
+    if (sections.length === 0) sections.push({ label: '内容', value: '空白日记' });
+
+    try {
+      window.TrueImageExporter.save({
+        type: '日记',
+        title: dateLabel,
+        sections: sections.slice(0, 4),
+        footer: `True · 日记 · ${new Date().toLocaleDateString('zh-CN')}`
+      });
+      this.toast('已保存图片');
+    } catch (err) {
+      this.toast('导出失败，请重试');
+    }
   }
 
   // ===== 首页 =====
