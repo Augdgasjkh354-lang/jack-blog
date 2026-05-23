@@ -92,10 +92,10 @@ button,input,textarea,select{font:inherit}
 
 /* 首页 */
 .home-hero{
-  text-align:center;padding:40px 20px 24px
+  text-align:center;padding:56px 20px 32px
 }
-.home-hero h1{font-size:28px;letter-spacing:.08em;margin-bottom:6px}
-.home-hero .subtitle{font-size:13px;color:var(--ink-f);margin-bottom:24px}
+.home-hero h1{font-size:32px;letter-spacing:.08em;margin-bottom:8px;font-weight:700}
+.home-hero .subtitle{font-size:14px;color:var(--ink-f);margin-bottom:28px}
 .home-actions{
   display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
   margin-bottom:32px
@@ -143,9 +143,10 @@ button,input,textarea,select{font:inherit}
   display:flex;align-items:center;justify-content:center;
   background:var(--paper)
 }
-.lock-box{text-align:center;max-width:320px;padding:24px}
-.lock-box h1{font-size:24px;letter-spacing:.06em;margin-bottom:8px}
-.lock-box .divider{width:28px;height:2px;background:var(--red);margin:0 auto 24px}
+.lock-box{text-align:center;max-width:340px;padding:40px 28px}
+.lock-box h1{font-size:28px;letter-spacing:.08em;margin-bottom:10px;font-weight:700}
+.lock-box .slogan{font-size:12px;color:var(--ink-f);margin-bottom:20px;letter-spacing:.04em}
+.lock-box .divider{width:32px;height:2px;background:var(--red);margin:0 auto 28px}
 .lock-box input{
   width:100%;font-size:15px;padding:10px 14px;
   background:var(--paper-w);border:1px solid var(--rule);
@@ -174,7 +175,7 @@ button,input,textarea,select{font:inherit}
 /* 统计 */
 .stats{
   display:flex;gap:16px;justify-content:center;
-  padding:12px 20px;font-size:12px;color:var(--ink-f)
+  padding:16px 20px;font-size:13px;color:var(--ink-f);letter-spacing:.02em
 }
 
 /* 响应式 */
