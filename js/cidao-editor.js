@@ -338,6 +338,27 @@
     els.emptyNewBtn.addEventListener('click', createDraft);
     els.draftSearch.addEventListener('input', renderDraftList);
 
+    // 移动端 tab 切换
+    const mobileTabs = document.getElementById('mobileTabs');
+    const sidebarPanel = document.getElementById('sidebarPanel');
+    const editorSection = document.querySelector('.editor');
+    if (mobileTabs) {
+      mobileTabs.addEventListener('click', (e) => {
+        const btn = e.target.closest('.tab-btn');
+        if (!btn) return;
+        mobileTabs.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const tab = btn.dataset.tab;
+        if (tab === 'list') {
+          sidebarPanel.classList.remove('hidden');
+          editorSection.classList.add('hidden');
+        } else {
+          sidebarPanel.classList.add('hidden');
+          editorSection.classList.remove('hidden');
+        }
+      });
+    }
+
     els.draftTitle.addEventListener('input', scheduleSave);
     els.draftContent.addEventListener('input', scheduleSave);
 
