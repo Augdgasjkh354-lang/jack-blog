@@ -9,12 +9,14 @@ button,input,textarea,select{font:inherit}
 
 /* 主题变量 */
 [data-t="light"]{
+  --radius: 4px;--shadow: 0 2px 8px rgba(26,22,18,.08);--transition: .2s ease;
   --ink:#1a1612;--ink-l:#4a3f35;--ink-f:#8a7a6a;
   --paper:#f5f0e8;--paper-w:#ede7d9;--paper-d:#e0d8c8;
   --rule:#c8bfb0;--red:#8b2500;--red-bg:rgba(139,37,0,.07);
   background:var(--paper);color:var(--ink);color-scheme:light
 }
 [data-t="dark"]{
+  --radius: 4px;--shadow: 0 2px 8px rgba(0,0,0,.24);--transition: .2s ease;
   --ink:#e0d8c8;--ink-l:#b0a898;--ink-f:#7a7060;
   --paper:#1c1a16;--paper-w:#242218;--paper-d:#2e2a24;
   --rule:#3a3428;--red:#d05030;--red-bg:rgba(208,80,48,.12);
@@ -42,9 +44,9 @@ button,input,textarea,select{font:inherit}
 .bn{
   border:1px solid var(--rule);background:var(--paper-w);color:var(--ink);
   padding:6px 14px;cursor:pointer;font-size:13px;
-  transition:all .2s
+  transition:all var(--transition);border-radius:var(--radius)
 }
-.bn:hover{background:var(--paper-d)}
+.bn:hover{background:var(--paper-d);transition:all var(--transition)}
 .bn:active{transform:scale(.97)}
 .bn.p{background:var(--red);color:#f5f0e8;border-color:var(--red)}
 .bn.p:hover{opacity:.9}
@@ -58,7 +60,8 @@ button,input,textarea,select{font:inherit}
 .search-bar input{
   flex:1;padding:8px 12px;border:1px solid var(--rule);
   background:var(--paper);color:var(--ink);font-size:14px;
-  outline:none
+  outline:none;
+  border-radius:var(--radius)
 }
 .search-bar input:focus{border-color:var(--red)}
 .search-hint{
@@ -146,21 +149,25 @@ button,input,textarea,select{font:inherit}
   width:100%;font-size:15px;padding:10px 14px;
   background:var(--paper-w);border:1px solid var(--rule);
   border-bottom:2px solid var(--rule);color:var(--ink);
-  outline:none;text-align:center;letter-spacing:.1em
+  outline:none;text-align:center;letter-spacing:.1em;
+  border-radius:var(--radius)
 }
 .lock-box .err{font-size:12px;color:var(--red);margin-top:8px;min-height:18px}
 .lock-box button{
   margin-top:12px;font-size:13px;padding:8px 28px;
   background:var(--red);color:#f5f0e8;border:1px solid var(--red);
-  cursor:pointer;letter-spacing:.06em
+  cursor:pointer;letter-spacing:.06em;
+  border-radius:var(--radius);
+  transition:opacity var(--transition);
 }
+.lock-box button:hover{opacity:.9;}
 
 /* Toast */
 .toast{
   position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
   background:var(--ink);color:var(--paper);padding:8px 20px;
   font-size:13px;display:none;z-index:2000;
-  border-radius:2px
+  border-radius:var(--radius)
 }
 
 /* 统计 */
