@@ -79,16 +79,25 @@ button,input,textarea,select{font:inherit}
 
 /* 词条详情 */
 .word-detail{padding:20px}
-.word-detail h2{font-size:22px;margin-bottom:16px;color:var(--ink)}
-.word-field{margin-bottom:14px}
+.word-detail h2{font-size:22px;margin-bottom:20px;color:var(--ink);padding-bottom:12px;border-bottom:1px solid var(--rule)}
+.word-field{margin-bottom:16px}
 .word-field-label{
-  font-size:11px;color:var(--red);letter-spacing:.06em;
+  font-size:11px;letter-spacing:.06em;
   text-transform:uppercase;margin-bottom:4px;font-weight:600
 }
 .word-field-content{
-  font-size:14px;line-height:1.7;color:var(--ink-l);
-  padding:8px 12px;background:var(--red-bg);border-left:2px solid var(--red)
+  font-size:14px;line-height:1.8;color:var(--ink-l);
+  padding:10px 14px;border-radius:var(--radius)
 }
+/* 四维度色调区分 */
+.word-field.f-wrong .word-field-label{color:#8a6d3b}
+.word-field.f-wrong .word-field-content{background:rgba(138,109,59,.07);border-left:3px solid #8a6d3b}
+.word-field.f-right .word-field-label{color:var(--red)}
+.word-field.f-right .word-field-content{background:var(--red-bg);border-left:3px solid var(--red)}
+.word-field.f-fail .word-field-label{color:#7a6040}
+.word-field.f-fail .word-field-content{background:rgba(122,96,64,.07);border-left:3px solid #7a6040}
+.word-field.f-border .word-field-label{color:#5a7a5a}
+.word-field.f-border .word-field-content{background:rgba(90,122,90,.07);border-left:3px solid #5a7a5a}
 
 /* 首页 */
 .home-hero{

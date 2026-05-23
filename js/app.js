@@ -195,24 +195,24 @@ class CidaoApp {
     const html = `
       <div class="word-detail">
         <h2>${this._escapeHtml(word.word)}</h2>
-        <div class="word-field">
+        <div class="word-field f-wrong">
           <div class="word-field-label">误解</div>
           <div class="word-field-content">${this._escapeHtml(word.wrong || '—')}</div>
         </div>
-        <div class="word-field">
+        <div class="word-field f-right">
           <div class="word-field-label">正解</div>
           <div class="word-field-content">${this._escapeHtml(word.right || '—')}</div>
         </div>
-        <div class="word-field">
+        <div class="word-field f-fail">
           <div class="word-field-label">失效</div>
           <div class="word-field-content">${this._escapeHtml(word.fail || '—')}</div>
         </div>
-        <div class="word-field">
+        <div class="word-field f-border">
           <div class="word-field-label">边界</div>
           <div class="word-field-content">${this._escapeHtml(word.border || '—')}</div>
         </div>
         <div class="modal-acts">
-          <button class="bn" onclick="app.exportWordAsImage('${word.id}')">保存为图片</button>
+          <button class="bn p" onclick="app.exportWordAsImage('${word.id}')">保存为图片</button>
           <button class="bn" onclick="app.closeModal()">关闭</button>
         </div>
       </div>
