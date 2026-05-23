@@ -8,7 +8,8 @@ const StorageManager = {
     words: 'cidao_words',
     version: 'cidao_data_version',
     userAdded: 'cidao_user_added',
-    theme: 'cidao_theme'
+    theme: 'cidao_theme',
+    diary: 'cidao_diary'
   },
 
   /**
@@ -236,5 +237,82 @@ const StorageManager = {
   },
   saveTheme(theme) {
     localStorage.setItem(this.KEYS.theme, theme);
+  },
+
+  // ===== 日记 CRUD =====
+
+  /**
+   * 获取所有日记，按日期倒序
+   */
+  getDiaries() {
+    try {
+      const raw = localStorage.getItem(this.KEYS.diary);
+      if (!raw) return [];
+      const diaries = JSON.parse(raw);
+      return diaries.sort((a, b) => b.date.localeCompare(a.date));
+    } catch (e) {
+      console.error('[StorageManager] 读取日记失败:', e);
+      return [];
+    }
+  },
+
+  /**
+   * 根据日期获取单篇日记
+   */
+  getDiaryByDate(date) {
+    const diaries = this.getDiaries();
+    return diaries.find(d => d.date === date) || null;
+  },
+
+  /**
+   * 获取某个月份的日记
+   * @param {string} yearMonth - 格式 'YYYY-MM'
+   */
+  getDiariesByMonth(yearMonth) {
+    const diaries = this.getDiaries();
+    return diaries.filter(d => d.date.startsWith(yearMonth));
+  },
+
+  /**
+   * 保存日记（新建或更新）
+   * 每天只能有一篇，同一天重复保存是更新
+   */
+  saveDiary(diary) {
+    try {
+      const diaries = this.getDiaries();
+      const idx = diaries.findIndex(d => d.date === diary.date);
+      if (idx >= 0) {
+        diaries[idx] = { ...diaries[idx], ...diary, updatedAt: new Date().toISOString() };
+      } else {
+        diaries.push({
+          id: 'diary_' + Date.now(),
+          date: diary.date,
+          content: diary.content || '',
+          mood: diary.mood || '',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        });
+      }
+      localStorage.setItem(this.KEYS.diary, JSON.stringify(diaries));
+      return true;
+    } catch (e) {
+      console.error('[StorageManager] 保存日记失败:', e);
+      return false;
+    }
+  },
+
+  /**
+   * 删除日记
+   */
+  deleteDiary(date) {
+    try {
+      let diaries = this.getDiaries();
+      diaries = diaries.filter(d => d.date !== date);
+      localStorage.setItem(this.KEYS.diary, JSON.stringify(diaries));
+      return true;
+    } catch (e) {
+      console.error('[StorageManager] 删除日记失败:', e);
+      return false;
+    }
   }
 };
