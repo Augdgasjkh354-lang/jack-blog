@@ -158,6 +158,7 @@ class CidaoApp {
             </div>
           `}
         </div>
+        ${diaries.length > 0 ? `<div class="stats">本月 ${diaries.length} 篇日记</div>` : ''}
       </div>
     `;
   }

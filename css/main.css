@@ -246,9 +246,15 @@ button,input,textarea,select{font:inherit}
   padding:16px;margin-bottom:12px;
   background:var(--paper-w);border:1px solid var(--rule);
   border-radius:8px;cursor:pointer;
-  transition:box-shadow var(--transition), border-color var(--transition)
+  transition:box-shadow var(--transition), border-color var(--transition);
+  animation:fadeIn .3s ease both
 }
+.diary-card:nth-child(2){animation-delay:.05s}
+.diary-card:nth-child(3){animation-delay:.1s}
+.diary-card:nth-child(4){animation-delay:.15s}
+.diary-card:nth-child(5){animation-delay:.2s}
 .diary-card:hover{box-shadow:var(--shadow);border-color:var(--red)}
+.diary-card:active{transform:scale(.99)}
 .diary-card-head{
   display:flex;align-items:center;justify-content:space-between;margin-bottom:8px
 }
@@ -320,4 +326,16 @@ button,input,textarea,select{font:inherit}
   }
   .modal-overlay .modal{transform:translateY(100%)}
   .modal-overlay.show .modal{transform:translateY(0)}
+  /* 日记移动端 */
+  .diary-edit{padding:16px}
+  .diary-mood-picker{gap:6px}
+  .mood-btn{padding:6px 10px}
+  .mood-emoji{font-size:18px}
+  .diary-textarea{min-height:200px;font-size:14px}
+  .diary-edit-actions{flex-wrap:wrap}
+  .diary-edit-actions .bn{flex:1;min-width:0;text-align:center}
+  .diary-card{padding:14px}
+  .diary-header{padding:16px 16px 10px}
+  .diary-list{padding:0 16px 16px}
+  .diary-today-action{padding:0 16px 12px}
 }
