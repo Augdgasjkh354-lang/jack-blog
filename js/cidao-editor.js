@@ -264,6 +264,12 @@
       item.addEventListener('click', () => selectDraft(d.id));
       els.draftList.appendChild(item);
     }
+    updateDraftCount();
+  }
+
+  function updateDraftCount() {
+    const el = document.getElementById('draftCount');
+    if (el) el.textContent = `共 ${drafts.length} 篇草稿`;
   }
 
   function renderEditor() {

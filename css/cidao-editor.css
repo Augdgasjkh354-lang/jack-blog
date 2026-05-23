@@ -99,7 +99,14 @@ a{color:inherit;text-decoration:none}
   border-radius:var(--radius);
 }
 .search:focus{border-color:var(--ink-l)}
-.draft-list{min-height:0;overflow:auto;padding-bottom:12px}
+.draft-list{min-height:0;overflow:auto;padding-bottom:12px;flex:1}
+.draft-count{
+  padding:8px 15px;
+  font-size:11px;
+  color:var(--ink-f);
+  border-top:1px solid var(--rule);
+  text-align:center;
+}
 .draft-item{
   padding:13px 15px;
   border-bottom:1px solid var(--paper-d);
@@ -144,6 +151,7 @@ a{color:inherit;text-decoration:none}
   color:var(--ink);
   font-family:Georgia,serif;
   letter-spacing:.06em;
+  font-size:26px;
 }
 .empty-state p{line-height:1.8}
 .editor-panel{
@@ -168,11 +176,20 @@ a{color:inherit;text-decoration:none}
 .meta-row{
   display:flex;
   flex-wrap:wrap;
-  gap:12px;
+  gap:8px;
   padding:10px 0;
   color:var(--ink-f);
-  font-family:"Courier New",monospace;
   font-size:11px;
+}
+.meta-row span{
+  display:inline-block;
+  padding:2px 8px;
+  background:var(--paper-w);
+  border:1px solid var(--rule);
+  border-radius:10px;
+  font-family:"Courier New",monospace;
+  font-size:10px;
+  line-height:1.5;
 }
 .content-input{
   min-height:0;
@@ -181,11 +198,12 @@ a{color:inherit;text-decoration:none}
   resize:none;
   border:0;
   outline:none;
-  background:transparent;
+  background:var(--paper-w);
   color:var(--ink);
-  padding:14px 0;
+  padding:16px;
   font-size:16px;
   line-height:1.9;
+  border-radius:var(--radius);
 }
 .editor-actions{
   display:flex;
