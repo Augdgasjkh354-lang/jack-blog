@@ -4,18 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#f5f0e8" />
-  <title>刀稿 - 词刀</title>
+  <title>True Draft - True（原词刀）</title>
   <link rel="stylesheet" href="./css/cidao-editor.css" />
 </head>
 <body data-t="light">
   <div class="editor-shell">
     <header class="topbar">
       <div>
-        <div class="brand">词刀 · 刀稿</div>
+        <div class="brand">True · Draft</div>
         <div class="sub">概念草稿区：写下想法，再切成词条</div>
       </div>
       <nav class="top-actions">
-        <a class="btn" href="./index.html">返回词刀</a>
+        <a class="btn" href="./index.html">返回 True</a>
         <button class="btn" id="themeBtn" type="button">夜间</button>
       </nav>
     </header>
@@ -24,7 +24,6 @@
       <aside class="sidebar">
         <div class="side-head">
           <button class="btn primary" id="newDraftBtn" type="button">新建草稿</button>
-          <button class="btn" id="exportAllBtn" type="button">导出全部</button>
         </div>
         <input class="search" id="draftSearch" type="search" placeholder="搜索草稿标题或正文" />
         <div class="draft-list" id="draftList" aria-label="草稿列表"></div>
@@ -50,50 +49,16 @@
 
           <div class="editor-actions">
             <button class="btn" id="saveBtn" type="button">保存</button>
-            <button class="btn" id="exportMdBtn" type="button">导出 Markdown</button>
-            <button class="btn primary" id="toWordBtn" type="button">转为词条</button>
-            <button class="btn danger" id="deleteDraftBtn" type="button">删除</button>
+            <button class="btn" id="exportImageBtn" type="button">保存为图片</button>
           </div>
         </article>
       </section>
     </main>
   </div>
 
-  <div class="modal-mask" id="wordModal" hidden>
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="wordModalTitle">
-      <h2 id="wordModalTitle">从草稿转为词条</h2>
-      <p class="modal-note">新词条会保存到用户本地词条库，不会直接修改 <code>data/words.json</code>。</p>
-
-      <label>
-        <span>词语 word</span>
-        <input id="wordField" />
-      </label>
-      <label>
-        <span>误解 wrong</span>
-        <textarea id="wrongField"></textarea>
-      </label>
-      <label>
-        <span>正解 right</span>
-        <textarea id="rightField"></textarea>
-      </label>
-      <label>
-        <span>失效 fail</span>
-        <textarea id="failField"></textarea>
-      </label>
-      <label>
-        <span>边界 border</span>
-        <textarea id="borderField"></textarea>
-      </label>
-
-      <div class="modal-actions">
-        <button class="btn" id="cancelWordBtn" type="button">取消</button>
-        <button class="btn primary" id="saveWordBtn" type="button">保存为词条</button>
-      </div>
-    </div>
-  </div>
-
   <div class="toast" id="toast" hidden></div>
 
+  <script src="./js/true-image-exporter.js"></script>
   <script src="./js/cidao-editor.js"></script>
 </body>
 </html>

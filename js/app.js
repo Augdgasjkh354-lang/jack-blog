@@ -101,7 +101,7 @@ class CidaoApp {
     const mainView = document.getElementById('mainView');
     mainView.innerHTML = `
       <div class="home-hero">
-        <h1>词刀</h1>
+        <h1>True</h1>
         <div class="subtitle">一把切开概念误区的词典</div>
         <div class="home-actions">
           <button class="bn p" onclick="app.switchView('browse')">浏览词典</button>
@@ -212,6 +212,7 @@ class CidaoApp {
           <div class="word-field-content">${this._escapeHtml(word.border || '—')}</div>
         </div>
         <div class="modal-acts">
+          <button class="bn" onclick="app.exportWordAsImage('${word.id}')">保存为图片</button>
           <button class="bn" onclick="app.closeModal()">关闭</button>
         </div>
       </div>
@@ -305,6 +306,27 @@ class CidaoApp {
 
   closeModal() {
     document.getElementById('modal').classList.remove('show');
+  }
+
+  exportWordAsImage(id) {
+    const word = this.words.find(w => w.id === id);
+    if (!word) return;
+    try {
+      window.TrueImageExporter.save({
+        type: '词条',
+        title: word.word || '未命名词条',
+        sections: [
+          { label: '误解', value: word.wrong || '—' },
+          { label: '正解', value: word.right || '—' },
+          { label: '失效', value: word.fail || '—' },
+          { label: '边界', value: word.border || '—' }
+        ],
+        footer: `True · ${new Date().toLocaleDateString('zh-CN')}`
+      });
+      this.toast('已保存图片');
+    } catch (err) {
+      this.toast('导出失败，请重试');
+    }
   }
 
   // ===== Toast =====
