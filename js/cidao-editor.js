@@ -35,7 +35,6 @@
     themeBtn: $('themeBtn'),
     newDraftBtn: $('newDraftBtn'),
     emptyNewBtn: $('emptyNewBtn'),
-    exportAllBtn: $('exportAllBtn'),
     draftSearch: $('draftSearch'),
     draftList: $('draftList'),
     emptyState: $('emptyState'),
@@ -46,17 +45,7 @@
     draftStats: $('draftStats'),
     draftTime: $('draftTime'),
     saveBtn: $('saveBtn'),
-    exportMdBtn: $('exportMdBtn'),
-    toWordBtn: $('toWordBtn'),
-    deleteDraftBtn: $('deleteDraftBtn'),
-    wordModal: $('wordModal'),
-    wordField: $('wordField'),
-    wrongField: $('wrongField'),
-    rightField: $('rightField'),
-    failField: $('failField'),
-    borderField: $('borderField'),
-    cancelWordBtn: $('cancelWordBtn'),
-    saveWordBtn: $('saveWordBtn'),
+    exportImageBtn: $('exportImageBtn'),
     toast: $('toast')
   };
 
@@ -304,111 +293,26 @@
     }[ch]));
   }
 
-  function exportActiveMarkdown() {
+
+  function exportActiveImage() {
     const draft = currentDraft();
     if (!draft) return;
     flushSave();
-    const md = [
-      `# ${draft.title || '未命名草稿'}`,
-      '',
-      `- 创建：${formatTime(draft.createdAt)}`,
-      `- 更新：${formatTime(draft.updatedAt)}`,
-      '',
-      '---',
-      '',
-      draft.content || ''
-    ].join('\n');
-    downloadText(`${sanitizeFileName(draft.title)}.md`, md, 'text/markdown;charset=utf-8');
-    toast('已导出 Markdown');
-  }
-
-  function exportAllDrafts() {
-    flushSave();
-    const pack = {
-      exportedAt: nowIso(),
-      source: 'cidao-editor',
-      drafts
-    };
-    downloadText(`cidao-drafts-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(pack, null, 2), 'application/json;charset=utf-8');
-    toast('已导出全部草稿');
-  }
-
-  function openWordModal() {
-    const draft = currentDraft();
-    if (!draft) return;
-
-    const selected = els.draftContent.value.slice(
-      els.draftContent.selectionStart,
-      els.draftContent.selectionEnd
-    ).trim();
-
-    els.wordField.value = selected && selected.length <= 18 ? selected : cleanTitleAsWord(draft.title);
-    els.wrongField.value = '';
-    els.rightField.value = '';
-    els.failField.value = '';
-    els.borderField.value = '';
-
-    els.wordModal.hidden = false;
-    setTimeout(() => els.wordField.focus(), 0);
-  }
-
-  function cleanTitleAsWord(title) {
-    return String(title || '')
-      .replace(/^关于/, '')
-      .replace(/[：:｜|].*$/, '')
-      .trim()
-      .slice(0, 18);
-  }
-
-  function closeWordModal() {
-    els.wordModal.hidden = true;
-  }
-
-  function saveWordFromModal() {
-    const draft = currentDraft();
-    if (!draft) return;
-
-    const word = {
-      id: makeId('user_entry'),
-      word: els.wordField.value.trim(),
-      wrong: els.wrongField.value.trim(),
-      right: els.rightField.value.trim(),
-      fail: els.failField.value.trim(),
-      border: els.borderField.value.trim(),
-      createdAt: nowIso(),
-      source: 'draft',
-      sourceDraftId: draft.id
-    };
-
-    if (!word.word) {
-      toast('请填写词语');
-      els.wordField.focus();
-      return;
+    try {
+      window.TrueImageExporter.save({
+        type: '草稿',
+        title: draft.title || '未命名草稿',
+        sections: [
+          { label: '正文', value: draft.content || '—' },
+          { label: '创建', value: formatTime(draft.createdAt) },
+          { label: '更新', value: formatTime(draft.updatedAt) }
+        ],
+        footer: `True Draft · ${new Date().toLocaleDateString('zh-CN')}`
+      });
+      toast('已保存图片');
+    } catch {
+      toast('导出失败，请重试');
     }
-
-    if (!word.right) {
-      toast('请至少填写正解');
-      els.rightField.focus();
-      return;
-    }
-
-    if (window.CIDAO_WORDS_INTEGRATION && typeof window.CIDAO_WORDS_INTEGRATION.addWord === 'function') {
-      window.CIDAO_WORDS_INTEGRATION.addWord(word);
-    } else {
-      const existing = readJson(config.userWordsKey, []);
-      const list = Array.isArray(existing) ? existing : [];
-      list.push(word);
-      writeJson(config.userWordsKey, list);
-    }
-
-    draft.linkedWordIds = Array.from(new Set([...(draft.linkedWordIds || []), word.id]));
-    draft.updatedAt = nowIso();
-    persistDrafts();
-
-    window.dispatchEvent(new CustomEvent('cidao:word-created', { detail: { word } }));
-    closeWordModal();
-    render();
-    toast('已保存为词条');
   }
 
   function applyTheme(theme) {
@@ -426,7 +330,6 @@
     els.themeBtn.addEventListener('click', toggleTheme);
     els.newDraftBtn.addEventListener('click', createDraft);
     els.emptyNewBtn.addEventListener('click', createDraft);
-    els.exportAllBtn.addEventListener('click', exportAllDrafts);
     els.draftSearch.addEventListener('input', renderDraftList);
 
     els.draftTitle.addEventListener('input', scheduleSave);
@@ -438,16 +341,7 @@
       toast('已保存');
     });
 
-    els.exportMdBtn.addEventListener('click', exportActiveMarkdown);
-    els.toWordBtn.addEventListener('click', openWordModal);
-    els.deleteDraftBtn.addEventListener('click', deleteActiveDraft);
-
-    els.cancelWordBtn.addEventListener('click', closeWordModal);
-    els.saveWordBtn.addEventListener('click', saveWordFromModal);
-
-    els.wordModal.addEventListener('click', (event) => {
-      if (event.target === els.wordModal) closeWordModal();
-    });
+    els.exportImageBtn.addEventListener('click', exportActiveImage);
 
     window.addEventListener('beforeunload', () => {
       updateActiveDraftFromInputs();
@@ -465,9 +359,6 @@
       if (mod && event.key.toLowerCase() === 'n') {
         event.preventDefault();
         createDraft();
-      }
-      if (event.key === 'Escape' && !els.wordModal.hidden) {
-        closeWordModal();
       }
     });
   }

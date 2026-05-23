@@ -1,7 +1,7 @@
 {
-  "name": "词刀 Cidao",
-  "short_name": "词刀",
-  "description": "一把切开概念误区的词典",
+  "name": "True（原词刀）",
+  "short_name": "True",
+  "description": "True（原词刀）— 一把切开概念误区的词典",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f5f0e8",
