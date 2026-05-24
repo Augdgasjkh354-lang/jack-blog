@@ -3,6 +3,13 @@
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;font-family:ui-serif,"Noto Serif CJK SC","Noto Serif SC","Songti SC",serif}
+
+/* 进场动画 */
+body{animation:pageEnter .6s cubic-bezier(0.16,1,0.3,1) both}
+@keyframes pageEnter{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
+}
 button,input,textarea,select{font:inherit}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-thumb{background:var(--rule);border-radius:2px}
