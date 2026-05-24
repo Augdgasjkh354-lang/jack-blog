@@ -2,7 +2,7 @@
   "name": "True（原词刀）",
   "short_name": "True",
   "description": "True（原词刀）— 一把切开概念误区的词典",
-  "start_url": "./index.html",
+  "start_url": "./app.html",
   "display": "standalone",
   "background_color": "#f5f0e8",
   "theme_color": "#8b2500",

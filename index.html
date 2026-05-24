@@ -269,6 +269,32 @@
 
 
 
+  /* ── Mobile ── */
+  @media (max-width: 768px) {
+    html, body { cursor: auto; }
+    .cursor, .cursor-ring { display: none !important; }
+    .ripple-btn { cursor: pointer; }
+    .tz-btn { cursor: pointer; }
+    .tz-item { cursor: pointer; }
+    .logo { top: 24px; left: 24px; }
+    .logo-main { font-size: 13px; }
+    .tz-btn { top: 24px; right: 24px; }
+    .tz-panel { top: 72px; right: 24px; width: 200px; }
+    .time-display { font-size: clamp(56px, 16vw, 100px); }
+    .poem-line { font-size: 13px; letter-spacing: 0.15em; }
+    .ripple-btn { bottom: 36px; }
+    .enter-hint { bottom: 88px; }
+    .bottom-ornament { bottom: 30px; }
+  }
+
+  @media (hover: none) {
+    html, body { cursor: auto; }
+    .cursor, .cursor-ring { display: none !important; }
+    .ripple-btn { cursor: pointer; }
+    .tz-btn { cursor: pointer; }
+    .tz-item { cursor: pointer; }
+  }
+
   @keyframes fadeIn { to { opacity: 1; } }
   @keyframes riseIn { to { opacity: 1; transform: translateY(0); } }
 </style>
