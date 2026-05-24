@@ -1,69 +1,849 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#8b2500">
-  <meta name="description" content="True（原词刀）— 一把切开概念误区的词典。3000个词条，四个维度切开每个概念。">
-  <title>True（原词刀）</title>
-  <link rel="stylesheet" href="css/main.css">
-  <link rel="manifest" href="manifest.json">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>此刻 · This Moment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Cinzel:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0d0d0f;
+    --paper: #f5f0e8;
+    --gold: #c9a96e;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--ink);
+    overflow: hidden;
+    font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+    cursor: none;
+  }
+
+  /* ── Sky background layers (crossfade) ── */
+  #sky-a, #sky-b {
+    position: fixed; inset: 0; z-index: 0;
+    transition: opacity 0.8s ease;
+  }
+  #sky-b { opacity: 0; }
+
+  /* ── Custom cursor ── */
+  .cursor {
+    position: fixed; width: 6px; height: 6px;
+    background: var(--gold); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    mix-blend-mode: screen;
+  }
+  .cursor-ring {
+    position: fixed; width: 32px; height: 32px;
+    border: 1px solid rgba(201,169,110,0.4); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease;
+  }
+
+  /* ── Second arc canvas ── */
+  #arc {
+    position: fixed; inset: 0; z-index: 11;
+    pointer-events: none;
+    opacity: 0; animation: fadeIn 2s 2s forwards;
+  }
+
+  /* ── Grain ── */
+  .grain {
+    position: fixed; inset: -50%; width: 200%; height: 200%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 2; opacity: 0.6;
+    animation: grainShift 0.5s steps(2) infinite;
+  }
+  @keyframes grainShift {
+    0%   { transform: translate(0,0); }
+    25%  { transform: translate(-2%,-1%); }
+    50%  { transform: translate(1%,2%); }
+    75%  { transform: translate(-1%,1%); }
+    100% { transform: translate(2%,-2%); }
+  }
+
+  /* ── Glows ── */
+  .glow { position: fixed; z-index: 2; border-radius: 50%; filter: blur(120px); pointer-events: none; }
+  .glow-1 {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(201,169,110,0.06) 0%, transparent 70%);
+    top: -100px; left: 50%; transform: translateX(-50%);
+    animation: breathe 8s ease-in-out infinite;
+  }
+  .glow-2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(100,120,180,0.05) 0%, transparent 70%);
+    bottom: -50px; right: 10%;
+    animation: breathe2 11s 2s ease-in-out infinite;
+  }
+  @keyframes breathe  { 0%,100%{opacity:.5;transform:translateX(-50%) scale(1)} 50%{opacity:1;transform:translateX(-50%) scale(1.1)} }
+  @keyframes breathe2 { 0%,100%{opacity:.4} 50%{opacity:.9} }
+
+  /* ── Logo ── */
+  .logo {
+    position: fixed; top: 36px; left: 44px;
+    z-index: 20; opacity: 0;
+    animation: riseIn 1.4s 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
+    user-select: none;
+  }
+  .logo-main {
+    font-family: 'Cinzel', serif; font-weight: 300; font-size: 15px;
+    letter-spacing: 0.28em; color: rgba(245,240,232,0.75);
+    line-height: 1; text-transform: uppercase;
+    position: relative; display: inline-block;
+  }
+  .logo-main::after {
+    content: ''; display: block; margin-top: 6px; height: 1px;
+    background: linear-gradient(90deg, var(--gold), rgba(201,169,110,0.0));
+    width: 100%; transform-origin: left;
+    animation: expandLine 1.2s 1.2s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  @keyframes expandLine { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+  .logo-sub {
+    margin-top: 5px; font-family: 'Noto Serif SC', serif; font-weight: 300;
+    font-size: 10px; letter-spacing: 0.5em; color: rgba(201,169,110,0.45); display: block;
+  }
+  .logo-sub::before { content: '·'; margin-right: 6px; color: var(--gold); font-size: 12px; }
+
+  /* ── TZ Button ── */
+  .tz-btn {
+    position: fixed; top: 36px; right: 44px; z-index: 20;
+    background: none; border: none; cursor: none; opacity: 0;
+    animation: riseIn 1.4s 0.8s cubic-bezier(0.16,1,0.3,1) forwards;
+    display: flex; flex-direction: column; align-items: flex-end; gap: 4px; padding: 6px;
+  }
+  .tz-btn-label { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.35em; color: rgba(201,169,110,0.35); text-transform: uppercase; transition: color 0.3s; }
+  .tz-btn-value { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; letter-spacing: 0.15em; color: rgba(245,240,232,0.5); transition: color 0.3s; }
+  .tz-btn-bar { width: 100%; height: 1px; background: linear-gradient(270deg, rgba(201,169,110,0.5), transparent); transform-origin: right; transform: scaleX(0.4); transition: transform 0.3s; }
+  .tz-btn:hover .tz-btn-label { color: rgba(201,169,110,0.7); }
+  .tz-btn:hover .tz-btn-value { color: rgba(245,240,232,0.85); }
+  .tz-btn:hover .tz-btn-bar   { transform: scaleX(1); }
+
+  /* ── TZ Panel ── */
+  .tz-panel {
+    position: fixed; top: 90px; right: 44px; z-index: 19; width: 220px;
+    background: rgba(13,13,15,0.92); border: 1px solid rgba(201,169,110,0.15);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-radius: 2px; overflow: hidden; opacity: 0;
+    transform: translateY(-8px) scaleY(0.94); transform-origin: top right;
+    pointer-events: none;
+    transition: opacity 0.3s cubic-bezier(0.16,1,0.3,1), transform 0.3s cubic-bezier(0.16,1,0.3,1);
+  }
+  .tz-panel.open { opacity: 1; transform: translateY(0) scaleY(1); pointer-events: all; }
+  .tz-panel-header { padding: 12px 16px 8px; font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 0.4em; color: rgba(201,169,110,0.4); text-transform: uppercase; border-bottom: 1px solid rgba(201,169,110,0.08); }
+  .tz-list { padding: 6px 0; }
+  .tz-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 16px; cursor: none; transition: background 0.2s; position: relative; overflow: hidden; }
+  .tz-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--gold); transform: scaleY(0); transform-origin: center; transition: transform 0.25s; }
+  .tz-item:hover { background: rgba(201,169,110,0.05); }
+  .tz-item:hover::before, .tz-item.active::before { transform: scaleY(1); }
+  .tz-item.active { background: rgba(201,169,110,0.07); }
+  .tz-item-city { font-family: 'Cormorant Garamond', serif; font-size: 13px; letter-spacing: 0.08em; color: rgba(245,240,232,0.65); transition: color 0.2s; }
+  .tz-item:hover .tz-item-city, .tz-item.active .tz-item-city { color: rgba(245,240,232,0.9); }
+  .tz-item-offset { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 11px; letter-spacing: 0.06em; color: rgba(201,169,110,0.35); transition: color 0.2s; }
+  .tz-item:hover .tz-item-offset, .tz-item.active .tz-item-offset { color: rgba(201,169,110,0.65); }
+
+  /* ── Scene ── */
+  .scene {
+    position: fixed; inset: 0; z-index: 10;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .ornament { display: flex; align-items: center; gap: 16px; opacity: 0; animation: riseIn 1.2s 1.8s cubic-bezier(0.16,1,0.3,1) forwards; }
+  .ornament-line { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+  .ornament-dot  { width: 4px; height: 4px; border: 1px solid var(--gold); border-radius: 50%; opacity: 0.7; }
+
+  .time-display {
+    font-family: 'Cormorant Garamond', serif; font-weight: 300;
+    font-size: clamp(72px, 14vw, 160px); color: var(--paper);
+    letter-spacing: -0.02em; line-height: 1; text-align: center;
+    opacity: 0; animation: riseIn 1.4s 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
+    user-select: none; transition: opacity 0.4s ease;
+  }
+  .time-display.switching { opacity: 0.2; }
+  .time-display .colon { color: var(--gold); animation: blink 2s step-start infinite; font-style: italic; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  .date-display {
+    font-family: 'Noto Serif SC', serif; font-weight: 300;
+    font-size: clamp(11px, 1.4vw, 14px); color: rgba(245,240,232,0.35);
+    letter-spacing: 0.35em; text-align: center; margin-top: 12px;
+    opacity: 0; animation: riseIn 1.2s 0.9s cubic-bezier(0.16,1,0.3,1) forwards; user-select: none;
+  }
+  .mid-divider {
+    width: 1px; height: 40px;
+    background: linear-gradient(180deg, rgba(201,169,110,0.4), transparent);
+    margin: 20px auto 0; opacity: 0; animation: fadeIn 1.5s 1.5s forwards;
+  }
+
+  /* ── Poem ── */
+  .poem { margin-top: 52px; text-align: center; display: flex; flex-direction: column; gap: 10px; }
+  .poem-line {
+    font-family: 'Noto Serif SC', serif; font-weight: 300;
+    font-size: clamp(13px, 1.6vw, 15px); color: rgba(245,240,232,0.22);
+    letter-spacing: 0.25em; opacity: 0; transform: translateY(10px);
+    transition: color 0.6s ease, opacity 0.8s ease, transform 0.8s ease;
+  }
+  .poem-line:nth-child(1) { animation: riseIn 1s 2.2s cubic-bezier(0.16,1,0.3,1) forwards; }
+  .poem-line:nth-child(2) { animation: riseIn 1s 2.6s cubic-bezier(0.16,1,0.3,1) forwards; }
+  .poem-line:nth-child(3) { animation: riseIn 1s 3.0s cubic-bezier(0.16,1,0.3,1) forwards; }
+  .poem-line:nth-child(4) { animation: riseIn 1s 3.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+  .poem:hover .poem-line { color: rgba(245,240,232,0.55); }
+  .poem-line:hover { color: var(--gold) !important; }
+  /* Poem fade transition */
+  .poem.fading .poem-line { opacity: 0 !important; transform: translateY(-6px) !important; }
+  .poem.entering .poem-line { opacity: 0; transform: translateY(10px); }
+
+  /* ── Bottom ornament ── */
+  .bottom-ornament {
+    position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 12px;
+    opacity: 0; animation: fadeIn 2s 4s forwards; z-index: 10;
+  }
+  .bottom-ornament span { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 11px; letter-spacing: 0.3em; color: rgba(201,169,110,0.3); }
+  .bottom-ornament-line { width: 30px; height: 1px; background: rgba(201,169,110,0.2); }
+
+  /* ── Particles ── */
+  .particle { position: fixed; border-radius: 50%; pointer-events: none; z-index: 5; opacity: 0; background: var(--gold); }
+  @keyframes floatUp {
+    0%   { opacity:0; transform:translateY(0) translateX(0); }
+    10%  { opacity:0.6; }
+    90%  { opacity:0.2; }
+    100% { opacity:0; transform:translateY(-80vh) translateX(var(--dx)); }
+  }
+
+  /* ── Ripple ── */
+  .ripple {
+    position: fixed; border-radius: 50%; pointer-events: none; z-index: 3;
+    border: 1px solid rgba(201,169,110,0.25);
+    transform: translate(-50%,-50%) scale(0);
+    animation: rippleOut 1.6s cubic-bezier(0.2,0.8,0.4,1) forwards;
+  }
+  @keyframes rippleOut {
+    0%   { transform: translate(-50%,-50%) scale(0); opacity:0.7; }
+    100% { transform: translate(-50%,-50%) scale(1); opacity:0; }
+  }
+
+  /* ── Center ripple button ── */
+  .ripple-btn {
+    position: fixed; bottom: 44px; left: 50%; transform: translateX(-50%);
+    z-index: 20;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: transparent;
+    border: 1px solid rgba(201,169,110,0.35);
+    cursor: none;
+    opacity: 0; animation: fadeIn 2s 4s forwards;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .ripple-btn::before {
+    content: '';
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(201,169,110,0.55);
+    transition: transform 0.3s ease, background 0.3s ease;
+  }
+  .ripple-btn:hover {
+    border-color: rgba(201,169,110,0.7);
+    box-shadow: 0 0 18px rgba(201,169,110,0.12);
+  }
+  .ripple-btn:hover::before { transform: scale(1.6); background: rgba(201,169,110,0.9); }
+
+
+
+  @keyframes fadeIn { to { opacity: 1; } }
+  @keyframes riseIn { to { opacity: 1; transform: translateY(0); } }
+</style>
 </head>
-<body data-t="light">
+<body>
 
-<!-- 密码锁 -->
-<div class="lock-screen" id="lockScreen">
-  <div class="lock-box">
-    <h1>True</h1>
-    <div class="slogan">一把切开概念误区的词典</div>
-    <div class="divider"></div>
-    <div style="font-size:13px;color:var(--ink-f);margin-bottom:16px;">请输入密码以继续</div>
-    <input type="password" id="lockPwd" placeholder="密码" onkeydown="if(event.key==='Enter')document.getElementById('lockBtn').click()">
-    <div class="err" id="lockErr"></div>
-    <button id="lockBtn">进入</button>
+<div id="sky-a"></div>
+<div id="sky-b"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<canvas id="arc"></canvas>
+<canvas id="stars"></canvas>
+<div class="grain"></div>
+<div class="glow glow-1"></div>
+<div class="glow glow-2"></div>
+
+<div class="logo">
+  <span class="logo-main">This Moment</span>
+  <span class="logo-sub">此刻</span>
+</div>
+
+<button class="tz-btn" id="tzBtn" onclick="togglePanel()">
+  <span class="tz-btn-label">Timezone</span>
+  <span class="tz-btn-value" id="tzBtnValue">Local</span>
+  <span class="tz-btn-bar"></span>
+</button>
+
+<div class="tz-panel" id="tzPanel">
+  <div class="tz-panel-header">Select Region</div>
+  <div class="tz-list" id="tzList"></div>
+</div>
+
+<div class="scene">
+  <div class="ornament">
+    <div class="ornament-line"></div>
+    <div class="ornament-dot"></div>
+    <div class="ornament-line"></div>
+  </div>
+  <div class="time-display" id="clockDisplay">
+    <span id="hh">00</span><span class="colon">:</span><span id="mm">00</span><span class="colon">:</span><span id="ss">00</span>
+  </div>
+  <div class="date-display" id="dateDisplay">——</div>
+  <div class="mid-divider"></div>
+  <div class="poem" id="poem">
+    <div class="poem-line" id="pl0"></div>
+    <div class="poem-line" id="pl1"></div>
+    <div class="poem-line" id="pl2"></div>
+    <div class="poem-line" id="pl3"></div>
   </div>
 </div>
 
-<!-- 主应用 -->
-<div class="app" id="app" style="display:none;">
-  <div class="hd">
-    <div class="hd-title">True</div>
-    <div class="hd-acts">
-      <button class="bn" id="themeBtn" title="切换主题">🌙</button>
-    </div>
-  </div>
-  <div class="app-body">
-    <div id="mainView" class="content-area"></div>
-  </div>
 
-  <!-- 底部 Tab 导航 -->
-  <nav class="tab-bar" id="tabBar">
-    <button class="tab-item active" data-tab="dict" type="button">
-      <span class="tab-icon">📖</span>
-      <span class="tab-label">词典</span>
-    </button>
-    <button class="tab-item" data-tab="diary" type="button">
-      <span class="tab-icon">📝</span>
-      <span class="tab-label">日记</span>
-    </button>
-    <button class="tab-item" data-tab="draft" type="button">
-      <span class="tab-icon">✏️</span>
-      <span class="tab-label">草稿</span>
-    </button>
-  </nav>
-</div>
 
-<!-- 模态框 -->
-<div class="modal-overlay" id="modal">
-  <div class="modal" id="modalContent"></div>
-</div>
+<button class="ripple-btn" id="rippleBtn"></button>
 
-<!-- Toast -->
-<div class="toast" id="toast"></div>
+<script>
+// ══════════════════════════════════════
+// 1. POEMS — rotate every 18s
+// ══════════════════════════════════════
+const POEMS = [
+  ['降服心猿意马', '', '', ''],
+];
+let poemIdx = 0;
 
-<script src="js/storage.js"></script>
-<script src="js/search.js"></script>
-<script src="js/true-image-exporter.js"></script>
-<script src="js/app.js"></script>
+function setPoem(lines, animate) {
+  const poem = document.getElementById('poem');
+  if (animate) {
+    poem.classList.add('fading');
+    setTimeout(() => {
+      lines.forEach((l,i) => { document.getElementById('pl'+i).textContent = l; });
+      poem.classList.remove('fading');
+      poem.classList.add('entering');
+      // stagger in
+      lines.forEach((_,i) => {
+        const el = document.getElementById('pl'+i);
+        el.style.transition = 'none';
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(10px)';
+        setTimeout(() => {
+          el.style.transition = 'opacity 0.9s ease, transform 0.9s ease, color 0.6s ease';
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+        }, 80 + i * 140);
+      });
+      setTimeout(() => poem.classList.remove('entering'), 1500);
+    }, 700);
+  } else {
+    lines.forEach((l,i) => { document.getElementById('pl'+i).textContent = l; });
+  }
+}
+
+// Initial load (no animation — CSS handles it)
+setPoem(POEMS[0], false);
+// Override initial CSS animations so JS can control
+setTimeout(() => {
+  document.querySelectorAll('.poem-line').forEach(el => {
+    el.style.opacity = '1';
+    el.style.transform = 'translateY(0)';
+  });
+}, 4000);
+
+setInterval(() => {
+  if (POEMS.length <= 1) return;
+  poemIdx = (poemIdx + 1) % POEMS.length;
+  setPoem(POEMS[poemIdx], true);
+}, 18000);
+
+// ══════════════════════════════════════
+// 2. SKY — color by hour
+// ══════════════════════════════════════
+// Each entry: [hour, gradientCSS]
+const SKY_PALETTE = [
+  [0,  'linear-gradient(180deg, #0d0d0f 0%, #080d1a 100%)'],           // midnight — pure dark
+  [3,  'linear-gradient(180deg, #060810 0%, #0a0d20 100%)'],           // deep night — cold indigo
+  [5,  'linear-gradient(180deg, #0a0d1f 0%, #1a1030 50%, #2a1020 100%)'], // pre-dawn — deep indigo-purple
+  [6,  'linear-gradient(180deg, #0d0f20 0%, #1e1535 40%, #3d1c18 100%)'], // dawn — purple fading to ember
+  [7,  'linear-gradient(180deg, #141830 0%, #2e2040 40%, #8b3a20 80%, #c86020 100%)'], // sunrise — orange bleeds up
+  [8,  'linear-gradient(180deg, #1a1a2e 0%, #16213e 40%, #c47a3a 100%)'], // morning
+  [10, 'linear-gradient(180deg, #1a2030 0%, #1e3050 60%, #8ab0c8 100%)'], // mid morning — steel blue
+  [12, 'linear-gradient(180deg, #121820 0%, #1c2c40 60%, #5888a8 100%)'], // noon
+  [15, 'linear-gradient(180deg, #111620 0%, #1a2838 60%, #4878a0 100%)'], // afternoon
+  [17, 'linear-gradient(180deg, #141020 0%, #241830 50%, #9a4a28 100%)'], // late afternoon
+  [18, 'linear-gradient(180deg, #100d18 0%, #2a1a28 40%, #c05030 80%, #e07840 100%)'], // sunset
+  [19, 'linear-gradient(180deg, #0d0d18 0%, #1a1030 50%, #6a2818 100%)'], // dusk
+  [20, 'linear-gradient(180deg, #0d0d14 0%, #10101e 60%, #2a1520 100%)'], // evening
+  [22, 'linear-gradient(180deg, #0d0d0f 0%, #0a0c16 100%)'],           // night
+  [24, 'linear-gradient(180deg, #0d0d0f 0%, #080d1a 100%)'],
+];
+
+function getSkyGradient(hour, minute) {
+  const t = hour + minute / 60;
+  let a = SKY_PALETTE[0], b = SKY_PALETTE[SKY_PALETTE.length - 1];
+  for (let i = 0; i < SKY_PALETTE.length - 1; i++) {
+    if (t >= SKY_PALETTE[i][0] && t < SKY_PALETTE[i+1][0]) {
+      a = SKY_PALETTE[i]; b = SKY_PALETTE[i+1]; break;
+    }
+  }
+  // We can't truly interpolate CSS gradient strings, so just snap to nearest
+  const frac = (t - a[0]) / (b[0] - a[0]);
+  return frac < 0.5 ? a[1] : b[1];
+}
+
+let lastSkyGradient = null, skyActive = 'a';
+function updateSky(h, m) {
+  const gradient = getSkyGradient(h, m);
+  if (gradient === lastSkyGradient) return;
+  lastSkyGradient = gradient;
+  if (skyActive === 'a') {
+    const b = document.getElementById('sky-b');
+    b.style.background = gradient;
+    b.style.opacity = '1';
+    document.getElementById('sky-a').style.opacity = '0';
+    skyActive = 'b';
+  } else {
+    const a = document.getElementById('sky-a');
+    a.style.background = gradient;
+    a.style.opacity = '1';
+    document.getElementById('sky-b').style.opacity = '0';
+    skyActive = 'a';
+  }
+}
+
+// ══════════════════════════════════════
+// 3. TIMEZONE
+// ══════════════════════════════════════
+const ZONES = [
+  { city: 'Local',       tz: null,                    label: 'Local'  },
+  { city: 'Beijing',     tz: 'Asia/Shanghai',          label: 'UTC+8'  },
+  { city: 'Tokyo',       tz: 'Asia/Tokyo',             label: 'UTC+9'  },
+  { city: 'Singapore',   tz: 'Asia/Singapore',         label: 'UTC+8'  },
+  { city: 'Dubai',       tz: 'Asia/Dubai',             label: 'UTC+4'  },
+  { city: 'London',      tz: 'Europe/London',          label: 'UTC±0'  },
+  { city: 'Paris',       tz: 'Europe/Paris',           label: 'UTC+1'  },
+  { city: 'New York',    tz: 'America/New_York',       label: 'UTC-5'  },
+  { city: 'Los Angeles', tz: 'America/Los_Angeles',    label: 'UTC-8'  },
+  { city: 'São Paulo',   tz: 'America/Sao_Paulo',      label: 'UTC-3'  },
+  { city: 'Sydney',      tz: 'Australia/Sydney',       label: 'UTC+10' },
+];
+let currentZone = ZONES[0], panelOpen = false;
+
+const list = document.getElementById('tzList');
+ZONES.forEach((z, i) => {
+  const el = document.createElement('div');
+  el.className = 'tz-item' + (i===0?' active':'');
+  el.dataset.index = i;
+  el.innerHTML = `<span class="tz-item-city">${z.city}</span><span class="tz-item-offset">${z.label}</span>`;
+  el.addEventListener('click', () => selectZone(i));
+  list.appendChild(el);
+});
+
+function selectZone(i) {
+  currentZone = ZONES[i];
+  document.getElementById('tzBtnValue').textContent = currentZone.city;
+  document.querySelectorAll('.tz-item').forEach((el,j) => el.classList.toggle('active', j===i));
+  const clk = document.getElementById('clockDisplay');
+  clk.classList.add('switching');
+  setTimeout(() => clk.classList.remove('switching'), 350);
+  closePanel();
+}
+function togglePanel() { panelOpen ? closePanel() : openPanel(); }
+function openPanel()  { panelOpen=true;  document.getElementById('tzPanel').classList.add('open'); }
+function closePanel() { panelOpen=false; document.getElementById('tzPanel').classList.remove('open'); }
+document.addEventListener('click', e => {
+  if (panelOpen && !e.target.closest('#tzPanel') && !e.target.closest('#tzBtn')) closePanel();
+});
+
+// ══════════════════════════════════════
+// 4. CLOCK
+// ══════════════════════════════════════
+function pad(n) { return String(n).padStart(2,'0'); }
+const WEEKDAYS_ZH = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+const MONTHS_ZH   = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+
+function getZonedDate() {
+  if (!currentZone.tz) {
+    const n = new Date();
+    return { h:n.getHours(), m:n.getMinutes(), s:n.getSeconds(), y:n.getFullYear(), mo:n.getMonth(), wd:n.getDay() };
+  }
+  const now = new Date();
+  const fmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: currentZone.tz,
+    hour:'numeric', minute:'numeric', second:'numeric',
+    year:'numeric', month:'numeric', weekday:'short', hour12:false
+  });
+  const parts = Object.fromEntries(fmt.formatToParts(now).map(p=>[p.type,p.value]));
+  return {
+    h: parseInt(parts.hour) % 24, m: parseInt(parts.minute), s: parseInt(parts.second),
+    y: parseInt(parts.year), mo: parseInt(parts.month)-1,
+    wd: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].indexOf(parts.weekday),
+  };
+}
+
+function tick() {
+  const t = getZonedDate();
+  document.getElementById('hh').textContent = pad(t.h);
+  document.getElementById('mm').textContent = pad(t.m);
+  document.getElementById('ss').textContent = pad(t.s);
+  const city = currentZone.city==='Local' ? '' : ` · ${currentZone.city}`;
+  document.getElementById('dateDisplay').textContent =
+    `${t.y} · ${MONTHS_ZH[t.mo]} · ${WEEKDAYS_ZH[t.wd>=0?t.wd:0]}${city}`;
+  updateSky(t.h, t.m);
+}
+tick();
+setInterval(tick, 1000);
+
+// ══════════════════════════════════════
+// ARC — second progress ring around clock
+// ══════════════════════════════════════
+const arcCanvas = document.getElementById('arc');
+const arcCtx = arcCanvas.getContext('2d');
+
+function resizeArc() {
+  arcCanvas.width  = window.innerWidth;
+  arcCanvas.height = window.innerHeight;
+}
+resizeArc();
+window.addEventListener('resize', resizeArc);
+
+function drawArc() {
+  const t = getZonedDate();
+  const seconds = t.s + (Date.now() % 1000) / 1000; // smooth sub-second
+  const progress = seconds / 60;
+
+  const W = arcCanvas.width, H = arcCanvas.height;
+  arcCtx.clearRect(0, 0, W, H);
+
+  const clockEl = document.getElementById('clockDisplay');
+  const clockRect = clockEl.getBoundingClientRect();
+  const cx = clockRect.left + clockRect.width / 2;
+  const cy = clockRect.top + clockRect.height / 2;
+
+  // Radius: clear outside the clock text
+  const fontSize = Math.min(160, Math.max(72, W * 0.14));
+  const radius = fontSize * 1.05 + 56;
+
+  const startAngle = -Math.PI / 2; // 12 o'clock
+  const endAngle   = startAngle + progress * Math.PI * 2;
+
+  // Trailing glow (wider, dimmer)
+  arcCtx.beginPath();
+  arcCtx.arc(cx, cy, radius, startAngle, endAngle);
+  arcCtx.strokeStyle = 'rgba(201,169,110,0.12)';
+  arcCtx.lineWidth = 6;
+  arcCtx.lineCap = 'round';
+  arcCtx.stroke();
+
+  // Main arc
+  arcCtx.beginPath();
+  arcCtx.arc(cx, cy, radius, startAngle, endAngle);
+  arcCtx.strokeStyle = 'rgba(201,169,110,0.55)';
+  arcCtx.lineWidth = 1.2;
+  arcCtx.lineCap = 'round';
+  arcCtx.stroke();
+
+  // Bright tip dot
+  if (progress > 0.005) {
+    const tipX = cx + Math.cos(endAngle) * radius;
+    const tipY = cy + Math.sin(endAngle) * radius;
+    arcCtx.beginPath();
+    arcCtx.arc(tipX, tipY, 2.2, 0, Math.PI * 2);
+    arcCtx.fillStyle = 'rgba(201,169,110,0.95)';
+    arcCtx.fill();
+
+    // Tip glow
+    const grad = arcCtx.createRadialGradient(tipX, tipY, 0, tipX, tipY, 10);
+    grad.addColorStop(0, 'rgba(201,169,110,0.3)');
+    grad.addColorStop(1, 'rgba(201,169,110,0)');
+    arcCtx.beginPath();
+    arcCtx.arc(tipX, tipY, 10, 0, Math.PI * 2);
+    arcCtx.fillStyle = grad;
+    arcCtx.fill();
+  }
+
+  requestAnimationFrame(drawArc);
+}
+drawArc();
+
+
+
+// ══════════════════════════════════════
+// 5. STARS — with cursor ripple attract
+// ══════════════════════════════════════
+const canvas = document.getElementById('stars');
+const ctx = canvas.getContext('2d');
+let stars = [], mouseX = -9999, mouseY = -9999, starRipple = null;
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  initStars();
+}
+function initStars() {
+  stars = [];
+  const count = Math.floor(canvas.width * canvas.height / 5500);
+  for (let i = 0; i < count; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      ox: 0, oy: 0,   // offset from base
+      bx: Math.random() * canvas.width,
+      by: Math.random() * canvas.height,
+      r: Math.random() * 0.9 + 0.1,
+      speed: Math.random() * 0.004 + 0.001,
+      phase: Math.random() * Math.PI * 2,
+    });
+    stars[stars.length-1].bx = stars[stars.length-1].x;
+    stars[stars.length-1].by = stars[stars.length-1].y;
+  }
+}
+
+const ATTRACT_RADIUS = 160;
+const ATTRACT_STRENGTH = 18;
+const RETURN_SPEED = 0.06;
+
+function drawStars(t) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Compute ripple wave front
+  let rippleWave = null;
+  if (starRipple) {
+    const elapsed = performance.now() - starRipple.startTime;
+    const progress = elapsed / starRipple.duration;
+    if (progress >= 1) {
+      starRipple = null;
+    } else {
+      const maxDist = Math.sqrt(canvas.width * canvas.width + canvas.height * canvas.height);
+      const waveFront = progress * maxDist * 1.1;
+      const waveWidth = maxDist * 0.18;
+      const strength  = 38 * Math.sin(progress * Math.PI); // peaks mid-way
+      rippleWave = { cx: starRipple.cx, cy: starRipple.cy, waveFront, waveWidth, strength };
+    }
+  }
+
+  for (const s of stars) {
+    // Attraction toward cursor
+    const dx = mouseX - s.bx, dy = mouseY - s.by;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    let tx = 0, ty = 0;
+    if (dist < ATTRACT_RADIUS && dist > 0) {
+      const force = (1 - dist / ATTRACT_RADIUS);
+      tx = (dx / dist) * force * ATTRACT_STRENGTH;
+      ty = (dy / dist) * force * ATTRACT_STRENGTH;
+    }
+
+    // Ripple wave push
+    if (rippleWave) {
+      const rdx = s.bx - rippleWave.cx, rdy = s.by - rippleWave.cy;
+      const rdist = Math.sqrt(rdx*rdx + rdy*rdy) || 1;
+      const distFromWave = Math.abs(rdist - rippleWave.waveFront);
+      if (distFromWave < rippleWave.waveWidth) {
+        const waveFactor = Math.cos((distFromWave / rippleWave.waveWidth) * Math.PI * 0.5);
+        const push = rippleWave.strength * waveFactor;
+        tx += (rdx / rdist) * push;
+        ty += (rdy / rdist) * push;
+      }
+    }
+
+    s.ox += (tx - s.ox) * RETURN_SPEED;
+    s.oy += (ty - s.oy) * RETURN_SPEED;
+    s.x = s.bx + s.ox;
+    s.y = s.by + s.oy;
+
+    const alpha = 0.12 + 0.55 * (0.5 + 0.5 * Math.sin(t * s.speed + s.phase));
+    // Stars near cursor get brighter
+    const boost = dist < ATTRACT_RADIUS ? (1 - dist/ATTRACT_RADIUS) * 0.5 : 0;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r + boost * 0.8, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(245,240,232,${Math.min(1, alpha + boost)})`;
+    ctx.fill();
+  }
+}
+function loop(t) { drawStars(t * 0.001); requestAnimationFrame(loop); }
+resize();
+window.addEventListener('resize', resize);
+requestAnimationFrame(loop);
+
+// ══════════════════════════════════════
+// 6. CURSOR + RIPPLE
+// ══════════════════════════════════════
+const cur  = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx=-100, my=-100, rx=-100, ry=-100;
+
+window.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  mouseX = mx; mouseY = my;
+});
+
+// Ripple on click
+window.addEventListener('click', e => {
+  const size = 80 + Math.random() * 60;
+  const r = document.createElement('div');
+  r.className = 'ripple';
+  r.style.cssText = `left:${e.clientX}px;top:${e.clientY}px;width:${size}px;height:${size}px;`;
+  document.body.appendChild(r);
+  setTimeout(() => r.remove(), 1700);
+});
+
+(function animCursor() {
+  cur.style.left=mx+'px'; cur.style.top=my+'px';
+  rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(animCursor);
+})();
+
+// ══════════════════════════════════════
+// 8. STAR RIPPLE BUTTON
+// ══════════════════════════════════════
+let soundIdx = 0;
+const SOUNDS = [
+  // 0 — 铜钵 singing bowl
+  (ac) => {
+    const now = ac.currentTime;
+    [[432, 0.18, 3.2], [864, 0.06, 2.5], [1296, 0.025, 1.8]].forEach(([freq, vol, dur]) => {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = 'sine'; o.frequency.setValueAtTime(freq, now);
+      o.frequency.exponentialRampToValueAtTime(freq * 0.995, now + dur);
+      g.gain.setValueAtTime(0, now);
+      g.gain.linearRampToValueAtTime(vol, now + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.001, now + dur);
+      o.connect(g); g.connect(ac.destination);
+      o.start(now); o.stop(now + dur + 0.1);
+    });
+  },
+  // 1 — 水滴 water drop
+  (ac) => {
+    const now = ac.currentTime;
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(1200, now);
+    o.frequency.exponentialRampToValueAtTime(400, now + 0.12);
+    g.gain.setValueAtTime(0.3, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+    o.connect(g); g.connect(ac.destination);
+    o.start(now); o.stop(now + 0.55);
+    // tiny echo
+    setTimeout(() => {
+      const now2 = ac.currentTime;
+      const o2 = ac.createOscillator(), g2 = ac.createGain();
+      o2.type = 'sine';
+      o2.frequency.setValueAtTime(900, now2);
+      o2.frequency.exponentialRampToValueAtTime(320, now2 + 0.09);
+      g2.gain.setValueAtTime(0.12, now2);
+      g2.gain.exponentialRampToValueAtTime(0.001, now2 + 0.35);
+      o2.connect(g2); g2.connect(ac.destination);
+      o2.start(now2); o2.stop(now2 + 0.4);
+    }, 180);
+  },
+  // 2 — 木鱼 wood block
+  (ac) => {
+    const now = ac.currentTime;
+    const buf = ac.createBuffer(1, ac.sampleRate * 0.15, ac.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ac.sampleRate * 0.018));
+    const src = ac.createBufferSource();
+    const bpf = ac.createBiquadFilter();
+    bpf.type = 'bandpass'; bpf.frequency.value = 800; bpf.Q.value = 8;
+    const g = ac.createGain(); g.gain.setValueAtTime(0.9, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+    src.buffer = buf; src.connect(bpf); bpf.connect(g); g.connect(ac.destination);
+    src.start(now);
+  },
+  // 3 — 风铃 wind chime
+  (ac) => {
+    const now = ac.currentTime;
+    [[1568, 0, 0.08], [2093, 0.06, 0.07], [1760, 0.13, 0.09], [2349, 0.22, 0.06]].forEach(([freq, delay, att]) => {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = 'triangle'; o.frequency.value = freq;
+      g.gain.setValueAtTime(0, now + delay);
+      g.gain.linearRampToValueAtTime(0.12, now + delay + att);
+      g.gain.exponentialRampToValueAtTime(0.001, now + delay + 1.8);
+      o.connect(g); g.connect(ac.destination);
+      o.start(now + delay); o.stop(now + delay + 1.9);
+    });
+  },
+  // 4 — 低沉弦鸣 cello-ish drone
+  (ac) => {
+    const now = ac.currentTime;
+    const o = ac.createOscillator(), g = ac.createGain();
+    const wave = ac.createPeriodicWave(
+      new Float32Array([0, 1, 0.5, 0.25, 0.1, 0.05]),
+      new Float32Array([0, 0, 0,   0,    0,   0])
+    );
+    o.setPeriodicWave(wave); o.frequency.value = 110;
+    g.gain.setValueAtTime(0, now);
+    g.gain.linearRampToValueAtTime(0.2, now + 0.3);
+    g.gain.setValueAtTime(0.2, now + 1.2);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 2.8);
+    o.connect(g); g.connect(ac.destination);
+    o.start(now); o.stop(now + 2.9);
+  },
+  // 5 — 玻璃杯 glass rim
+  (ac) => {
+    const now = ac.currentTime;
+    [[523, 0.14], [1047, 0.055], [1568, 0.022]].forEach(([freq, vol]) => {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = 'sine'; o.frequency.setValueAtTime(freq, now);
+      o.frequency.linearRampToValueAtTime(freq + 2, now + 2.5);
+      g.gain.setValueAtTime(0, now);
+      g.gain.linearRampToValueAtTime(vol, now + 0.04);
+      g.gain.setValueAtTime(vol, now + 0.3);
+      g.gain.exponentialRampToValueAtTime(0.001, now + 2.5);
+      o.connect(g); g.connect(ac.destination);
+      o.start(now); o.stop(now + 2.6);
+    });
+  },
+  // 6 — 空旷钟声 distant bell
+  (ac) => {
+    const now = ac.currentTime;
+    [[220, 0.22, 4.0], [440, 0.1, 3.2], [880, 0.05, 2.2], [1320, 0.025, 1.4]].forEach(([freq, vol, dur]) => {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = 'sine'; o.frequency.value = freq;
+      g.gain.setValueAtTime(0, now);
+      g.gain.linearRampToValueAtTime(vol, now + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.001, now + dur);
+      o.connect(g); g.connect(ac.destination);
+      o.start(now); o.stop(now + dur + 0.1);
+    });
+  },
+];
+
+document.getElementById('rippleBtn').addEventListener('click', e => {
+  e.stopPropagation();
+  const btn = document.getElementById('rippleBtn');
+  const rect = btn.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  starRipple = { cx, cy, startTime: performance.now(), duration: 2500 };
+
+  try {
+    const ac = new (window.AudioContext || window.webkitAudioContext)();
+    SOUNDS[soundIdx % SOUNDS.length](ac);
+    soundIdx++;
+  } catch(e) {}
+});
+
+
+// ══════════════════════════════════════
+function spawnParticle() {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const x = Math.random() * window.innerWidth;
+  const dx = (Math.random()-0.5)*60;
+  const dur = 8 + Math.random()*10;
+  const delay = Math.random()*2;
+  const size = Math.random() > 0.7 ? 2 : 1;
+  p.style.cssText = `left:${x}px;bottom:0;width:${size}px;height:${size}px;--dx:${dx}px;animation:floatUp ${dur}s ${delay}s linear forwards;`;
+  document.body.appendChild(p);
+  setTimeout(() => p.remove(), (dur+delay+0.5)*1000);
+}
+setInterval(spawnParticle, 1200);
+</script>
 </body>
 </html>
