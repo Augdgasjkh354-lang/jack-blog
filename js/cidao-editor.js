@@ -12,7 +12,7 @@
    * window.CIDAO_EDITOR_CONFIG = {
    *   draftsKey: 'cidao_drafts',
    *   userWordsKey: 'cidao_user_words',
-   *   homeHref: './index.html'
+   *   homeHref: './app.html'
    * };
    *
    * window.CIDAO_WORDS_INTEGRATION = {
@@ -26,7 +26,7 @@
     draftsKey: 'cidao_drafts',
     userWordsKey: 'cidao_user_words',
     themeKey: 'cidao_theme',
-    homeHref: './index.html'
+    homeHref: './app.html'
   }, window.CIDAO_EDITOR_CONFIG || {});
 
   const $ = (id) => document.getElementById(id);
